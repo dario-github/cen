@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>专属坏情绪粉碎机</title>
+    <style>
+        :root {
+            /* 定义主题色，可以根据卡通形象的色调进行调整 */
+            --primary-color: #ff9a9e; /* 柔和的粉色 */
+            --secondary-color: #fad0c4; /* 更浅的粉色渐变色 */
+            --bg-color: #2c2c34; /* 深色背景，突出前景 */
+            --text-color: #fcecec; /* 柔和的浅色文字 */
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: var(--bg-color);
+            /* 增加一个微妙的渐变背景，更显高级 */
+            background: linear-gradient(135deg, #2c2c34 0%, #3a3a45 100%);
+            color: var(--text-color);
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh; /* 使用 min-height 确保内容多时能滚动 */
+            overflow-x: hidden;
+            padding: 20px 0; /* 增加上下内边距 */
+            box-sizing: border-box;
+        }
+
+        .container {
+            text-align: center;
+            width: 85%;
+            max-width: 400px;
+            position: relative;
+            z-index: 2;
+            /* 增加一个磨砂玻璃效果的背景框，让内容更突出 */
+            background: rgba(255, 255, 255, 0.05);
+            padding: 30px 20px;
+            border-radius: 25px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* 卡通形象样式 */
+        .cartoon-avatar {
+            width: 120px; /* 根据实际图片大小调整 */
+            height: 120px;
+            border-radius: 50%; /* 圆形头像 */
+            object-fit: cover; /* 保持图片比例 */
+            margin-bottom: 15px;
+            border: 4px solid var(--primary-color); /* 加上主题色边框 */
+            box-shadow: 0 4px 15px rgba(255, 154, 158, 0.5); /* 加上柔和的阴影 */
+            /* 增加一个轻微的浮动动画 */
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+
+        h1 {
+            font-weight: 400;
+            margin-bottom: 25px;
+            color: var(--text-color);
+            letter-spacing: 1px;
+            font-size: 24px;
+        }
+
+        /* 个性化标题，加上她的名字 */
+        .personalized-title {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        textarea {
+            width: 100%;
+            height: 140px;
+            /* 输入框背景色调整为更通透的浅色 */
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            padding: 15px;
+            color: #fff;
+            font-size: 16px;
+            resize: none;
+            box-sizing: border-box;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        textarea:focus {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: var(--primary-color); /* 聚焦时边框变色 */
+        }
+
+        textarea::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .btn {
+            margin-top: 30px;
+            /* 按钮渐变色调整为更暖的色调 */
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            padding: 15px 50px;
+            color: #5a3f3f; /* 按钮文字颜色 */
+            font-size: 18px;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255, 154, 158, 0.6);
+            transition: transform 0.1s, box-shadow 0.3s;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .btn:active {
+            transform: scale(0.95);
+        }
+
+        /* 爆炸碎片样式，颜色调整 */
+        .particle {
+            position: absolute;
+            /* 粒子颜色也改为暖色调 */
+            background: var(--primary-color);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        /* 治愈文字 */
+        .healing-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 22px;
+            color: var(--primary-color);
+            opacity: 0;
+            width: 90%;
+            text-align: center;
+            pointer-events: none;
+            transition: opacity 0.8s ease;
+            line-height: 1.6;
+        }
+        
+        /* 重置按钮样式优化 */
+        .reset-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--primary-color);
+            color: var(--primary-color);
+            padding: 8px 20px;
+            border-radius: 20px;
+            margin-top: 25px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .reset-btn:hover {
+             background: var(--primary-color);
+             color: #fff;
+        }
+
+        .shake {
+            animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+        }
+
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-1px, 0, 0); }
+            20%, 80% { transform: translate3d(2px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+            40%, 60% { transform: translate3d(4px, 0, 0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container" id="inputZone">
+        <img src="cartoon.png" alt="席涔的卡通形象" class="cartoon-avatar">
+        
+        <h1><span class="personalized-title">席涔</span>的坏情绪粉碎机</h1>
+        <textarea id="moodInput" placeholder="亲爱的，有什么不开心的事情都写在这里吧...&#10;写完我们一起把它粉碎掉！"></textarea>
+        <button class="btn" onclick="crushMood()">💥 彻底粉碎 💥</button>
+    </div>
+
+    <div class="healing-text" id="healingZone">
+        <span style="font-size: 28px;">✨ 呼~ 烦恼都飞走啦！</span><br><br>
+        席涔是最棒的！<br>
+        <span style="font-size:16px; color: rgba(255,255,255,0.7);">不要皱眉啦，抱抱~ ❤️</span>
+        <br>
+        <button class="reset-btn" onclick="reset()">再来一次</button>
+    </div>
+
+    <script>
+        function crushMood() {
+            const input = document.getElementById('moodInput');
+            const container = document.getElementById('inputZone');
+            const text = input.value.trim();
+
+            if (!text) {
+                input.placeholder = "小迷糊，要先写下来才能粉碎哦~";
+                container.classList.add('shake');
+                setTimeout(() => container.classList.remove('shake'), 500);
+                return;
+            }
+
+            // 1. 震动反馈
+            if (navigator.vibrate) navigator.vibrate([50, 30, 50]); // 更有节奏的震动
+            
+            // 2. 生成爆炸粒子
+            createExplosion();
+
+            // 3. 隐藏输入框，显示动画
+            container.style.transition = 'transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.6s'; // 更Q弹的动画效果
+            container.style.transform = 'scale(0.8) translateY(-100px)'; // 向上飞出
+            container.style.opacity = '0';
+
+            // 4. 显示治愈文字
+            setTimeout(() => {
+                container.style.display = 'none';
+                const healing = document.getElementById('healingZone');
+                healing.style.opacity = '1';
+                healing.style.pointerEvents = 'auto'; // 允许点击重置按钮
+            }, 600);
+        }
+
+        function createExplosion() {
+            // 粒子颜色调整为暖色系
+            const colors = ['#ff9a9e', '#fad0c4', '#ffecd2', '#fcb69f', '#ffffff'];
+            const particleCount = 80; // 增加粒子数量
+
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                
+                // 随机位置和大小
+                // 让粒子从容器中心发出
+                const containerRect = document.getElementById('inputZone').getBoundingClientRect();
+                const x = containerRect.left + containerRect.width / 2;
+                const y = containerRect.top + containerRect.height / 2;
+                const size = Math.random() * 8 + 3;
+                
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+                particle.style.left = `${x}px`;
+                particle.style.top = `${y}px`;
+                
+                document.body.appendChild(particle);
+
+                // 随机飞溅方向，扩大范围
+                const destinationX = x + (Math.random() - 0.5) * 800;
+                const destinationY = y + (Math.random() - 0.5) * 800;
+                const rotation = Math.random() * 720;
+                const duration = Math.random() * 1200 + 600;
+
+                // 执行动画
+                const animation = particle.animate([
+                    { transform: `translate(0, 0) rotate(0deg)`, opacity: 1 },
+                    { transform: `translate(${destinationX - x}px, ${destinationY - y}px) rotate(${rotation}deg)`, opacity: 0 }
+                ], {
+                    duration: duration,
+                    easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)', // 更自然的爆炸曲线
+                    fill: 'forwards'
+                });
+
+                // 动画结束后清理DOM
+                animation.onfinish = () => particle.remove();
+            }
+        }
+
+        function reset() {
+            const container = document.getElementById('inputZone');
+            const healing = document.getElementById('healingZone');
+            const input = document.getElementById('moodInput');
+
+            healing.style.opacity = '0';
+            healing.style.pointerEvents = 'none';
+            
+            setTimeout(() => {
+                container.style.display = 'block';
+                // 强制重绘
+                requestAnimationFrame(() => {
+                    container.style.transform = 'scale(1) translateY(0)';
+                    container.style.opacity = '1';
+                    input.value = '';
+                    // input.focus(); // 手机上自动聚焦有时体验不好，可以去掉
+                });
+            }, 300);
+        }
+    </script>
+</body>
+</html>
+
