@@ -3,32 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>专属坏情绪粉碎机</title>
+    <title>席涔的专属坏情绪粉碎机</title>
     <style>
         :root {
-            /* 定义主题色，可以根据卡通形象的色调进行调整 */
             --primary-color: #ff9a9e; /* 柔和的粉色 */
             --secondary-color: #fad0c4; /* 更浅的粉色渐变色 */
-            --bg-color: #2c2c34; /* 深色背景，突出前景 */
-            --text-color: #fcecec; /* 柔和的浅色文字 */
+            --accent-color: #fbc2eb; /* 一点点紫色调 */
+            --bg-color: #2c2c34;
+            --text-color: #fcecec;
         }
 
         body {
             margin: 0;
             padding: 0;
-            background: var(--bg-color);
-            /* 增加一个微妙的渐变背景，更显高级 */
-            background: linear-gradient(135deg, #2c2c34 0%, #3a3a45 100%);
+            background: linear-gradient(135deg, #2c2c34 0%, #434353 100%);
             color: var(--text-color);
-            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            min-height: 100vh; /* 使用 min-height 确保内容多时能滚动 */
+            min-height: 100vh;
             overflow-x: hidden;
-            padding: 20px 0; /* 增加上下内边距 */
+            padding: 20px 0;
             box-sizing: border-box;
+        }
+
+        /* 入场动画 */
+        .fade-in-up {
+            animation: fadeInUp 0.8s ease-out forwards;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        @keyframes fadeInUp {
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .container {
@@ -37,141 +46,176 @@
             max-width: 400px;
             position: relative;
             z-index: 2;
-            /* 增加一个磨砂玻璃效果的背景框，让内容更突出 */
-            background: rgba(255, 255, 255, 0.05);
-            padding: 30px 20px;
-            border-radius: 25px;
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
-            backdrop-filter: blur(4px);
-            -webkit-backdrop-filter: blur(4px);
+            background: rgba(255, 255, 255, 0.06);
+            padding: 35px 25px;
+            border-radius: 30px;
+            box-shadow: 0 10px 40px -10px rgba(255, 154, 158, 0.3);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
         }
 
-        /* 卡通形象样式 */
         .cartoon-avatar {
-            width: 120px; /* 根据实际图片大小调整 */
-            height: 120px;
-            border-radius: 50%; /* 圆形头像 */
-            object-fit: cover; /* 保持图片比例 */
-            margin-bottom: 15px;
-            border: 4px solid var(--primary-color); /* 加上主题色边框 */
-            box-shadow: 0 4px 15px rgba(255, 154, 158, 0.5); /* 加上柔和的阴影 */
-            /* 增加一个轻微的浮动动画 */
-            animation: float 3s ease-in-out infinite;
+            width: 130px;
+            height: 130px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 10px;
+            border: 4px solid var(--primary-color);
+            box-shadow: 0 6px 20px rgba(255, 154, 158, 0.4);
+            animation: float 3.5s ease-in-out infinite;
         }
 
         @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-            100% { transform: translateY(0px); }
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-12px); }
         }
 
         h1 {
-            font-weight: 400;
-            margin-bottom: 25px;
+            font-weight: 600;
+            margin: 5px 0 15px 0;
             color: var(--text-color);
-            letter-spacing: 1px;
-            font-size: 24px;
+            font-size: 26px;
+            text-shadow: 0 2px 10px rgba(255, 154, 158, 0.3);
         }
 
-        /* 个性化标题，加上她的名字 */
-        .personalized-title {
-            color: var(--primary-color);
-            font-weight: 600;
+        .personalized-title { color: var(--primary-color); }
+
+        /* 动态欢迎语小标题 */
+        .welcome-subtitle {
+            font-size: 15px;
+            color: var(--secondary-color);
+            margin-bottom: 25px;
+            font-weight: 300;
+            letter-spacing: 1px;
         }
 
         textarea {
             width: 100%;
-            height: 140px;
-            /* 输入框背景色调整为更通透的浅色 */
-            background: rgba(255, 255, 255, 0.1);
-            border: 2px solid rgba(255, 255, 255, 0.15);
-            border-radius: 20px;
-            padding: 15px;
+            height: 150px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 2px solid rgba(255, 255, 255, 0.12);
+            border-radius: 22px;
+            padding: 18px;
             color: #fff;
             font-size: 16px;
             resize: none;
             box-sizing: border-box;
             outline: none;
             transition: all 0.3s;
+            line-height: 1.5;
         }
 
         textarea:focus {
-            background: rgba(255, 255, 255, 0.15);
-            border-color: var(--primary-color); /* 聚焦时边框变色 */
+            background: rgba(255, 255, 255, 0.12);
+            border-color: var(--accent-color);
+            box-shadow: 0 0 15px rgba(251, 194, 235, 0.2);
         }
 
-        textarea::placeholder {
-            color: rgba(255, 255, 255, 0.5);
-        }
+        textarea::placeholder { color: rgba(255, 255, 255, 0.45); }
 
         .btn {
-            margin-top: 30px;
-            /* 按钮渐变色调整为更暖的色调 */
-            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            margin-top: 35px;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
             border: none;
-            padding: 15px 50px;
-            color: #5a3f3f; /* 按钮文字颜色 */
+            padding: 16px 55px;
+            color: #6a4f4f;
             font-size: 18px;
-            font-weight: 600;
-            border-radius: 50px;
+            font-weight: 700;
+            border-radius: 60px;
             cursor: pointer;
-            box-shadow: 0 4px 15px rgba(255, 154, 158, 0.6);
-            transition: transform 0.1s, box-shadow 0.3s;
+            box-shadow: 0 8px 25px rgba(255, 154, 158, 0.5);
+            transition: all 0.2s;
             -webkit-tap-highlight-color: transparent;
+            position: relative;
+            overflow: hidden;
         }
 
-        .btn:active {
-            transform: scale(0.95);
+        .btn:active { transform: scale(0.96); box-shadow: 0 4px 15px rgba(255, 154, 158, 0.4); }
+        
+        /* 按钮光效 */
+        .btn::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(rgba(255,255,255,0.2), rgba(255,255,255,0));
+            transform: rotate(30deg);
+            animation: shine 3s infinite;
+        }
+        @keyframes shine {
+            to { transform: rotate(30deg) translate(100%, 100%); }
         }
 
-        /* 爆炸碎片样式，颜色调整 */
         .particle {
             position: absolute;
-            /* 粒子颜色也改为暖色调 */
             background: var(--primary-color);
             border-radius: 50%;
             pointer-events: none;
+            z-index: 10;
         }
 
-        /* 治愈文字 */
-        .healing-text {
+        .healing-zone {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            font-size: 22px;
-            color: var(--primary-color);
-            opacity: 0;
             width: 90%;
+            max-width: 380px;
             text-align: center;
+            opacity: 0;
             pointer-events: none;
-            transition: opacity 0.8s ease;
-            line-height: 1.6;
+            transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+            z-index: 5;
+        }
+
+        .healing-content {
+            /* 增加一个半透明背景让文字更清晰 */
+            background: rgba(44, 44, 52, 0.8);
+            padding: 30px;
+            border-radius: 25px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255,154,158, 0.2);
+        }
+
+        /* 治愈文字的主体 */
+        .healing-main-text {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+
+        /* 治愈文字的小尾巴 */
+        .healing-sub-text {
+            font-size: 15px;
+            color: rgba(255,255,255,0.7);
+            font-style: italic;
         }
         
-        /* 重置按钮样式优化 */
         .reset-btn {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid var(--primary-color);
-            color: var(--primary-color);
-            padding: 8px 20px;
-            border-radius: 20px;
-            margin-top: 25px;
-            font-size: 14px;
+            background: transparent;
+            border: 2px solid var(--secondary-color);
+            color: var(--secondary-color);
+            padding: 10px 30px;
+            border-radius: 30px;
+            margin-top: 30px;
+            font-size: 15px;
+            font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
         }
         
         .reset-btn:hover {
-             background: var(--primary-color);
-             color: #fff;
+             background: var(--secondary-color);
+             color: var(--bg-color);
         }
 
-        .shake {
-            animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
-        }
-
+        .shake { animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both; }
         @keyframes shake {
             10%, 90% { transform: translate3d(-1px, 0, 0); }
             20%, 80% { transform: translate3d(2px, 0, 0); }
@@ -182,96 +226,163 @@
 </head>
 <body>
 
-    <div class="container" id="inputZone">
+    <div class="container fade-in-up" id="inputZone">
         <img src="cartoon.png" alt="席涔的卡通形象" class="cartoon-avatar">
         
         <h1><span class="personalized-title">席涔</span>的坏情绪粉碎机</h1>
-        <textarea id="moodInput" placeholder="亲爱的，有什么不开心的事情都写在这里吧...&#10;写完我们一起把它粉碎掉！"></textarea>
-        <button class="btn" onclick="crushMood()">💥 彻底粉碎 💥</button>
+        <div class="welcome-subtitle" id="welcomeText">正在加载贴心问候...</div>
+
+        <textarea id="moodInput"></textarea>
+        <button class="btn" onclick="crushMood()">💥 启动超级粉碎 💥</button>
     </div>
 
-    <div class="healing-text" id="healingZone">
-        <span style="font-size: 28px;">✨ 呼~ 烦恼都飞走啦！</span><br><br>
-        席涔是最棒的！<br>
-        <span style="font-size:16px; color: rgba(255,255,255,0.7);">不要皱眉啦，抱抱~ ❤️</span>
-        <br>
-        <button class="reset-btn" onclick="reset()">再来一次</button>
+    <div class="healing-zone" id="healingZone">
+        <div class="healing-content">
+            <div class="healing-main-text" id="healingMain"></div>
+            <div class="healing-sub-text" id="healingSub"></div>
+            <button class="reset-btn" onclick="reset()">再来一次</button>
+        </div>
     </div>
 
     <script>
+        // --- 数据准备区 ---
+
+        // 输入框的随机占位符
+        const placeholders = [
+            "亲爱的，谁惹你不开心了？写下来，我替你揍它！",
+            "有什么烦心事都倒在这里吧，这里是你的专属树洞...",
+            "小脑袋里装了什么不开心？快丢进来，我们要装满快乐！",
+            "嘘...把秘密和烦恼都告诉我，粉碎完就只有天知地知你知我知啦。"
+        ];
+
+        // 随机治愈/逗趣文案库 (核心部分!)
+        // main: 主要的反馈文字，字体较大
+        // sub: 下方的小字，通常是安慰或调侃
+        const healingMessages = [
+            { main: "✨ Biu~ 刚才那个烦恼被我发射到外太空啦！", sub: "现在它是一只傻傻的外星人了，别理它。" },
+            { main: "抱抱你。你已经做得超级棒了，真的。", sub: "不要对自己太苛刻，偶尔偷懒也没关系哦。" },
+            { main: "报告长官！敌军（坏情绪）已被全歼！💥", sub: "请求奖励一个亲亲~ 😘 (凑不要脸地伸头)" },
+            { main: "烦恼已永久删除。现在，深呼吸...", sub: "世界依然很爱你，而我最爱你❤️" },
+            { main: "别怕，有我在呢。天大的事，睡一觉就变小了。", sub: "今晚月亮不营业，我来照亮你。" },
+            { main: "坏心情已被粉碎成渣渣，建议用一杯奶茶冲服！🥤", sub: "如果一杯不够，那就两杯！" },
+            { main: "席涔是最棒的！区区小烦恼，根本不是你的对手。", sub: "给你满分不怕你骄傲！💯" },
+            { main: "雨过天晴啦！快看，彩虹在等你抬头呢 ✨", sub: "所有的不开心，都是为了迎接后面的大好运！" },
+            { main: "摸摸头，呼噜呼噜毛，吓不着~", sub: "在我这里，你可以永远当个小朋友。" },
+            { main: "系统检测到你的可爱值正在上升...📈", sub: "糟糕，要爆表了！快笑一个中和一下！" },
+            { main: "已经拜托风把不开心都吹走啦~", sub: "剩下的只有温柔的风和你。" },
+            { main: "无论发生什么，记得你身后一直有我。", sub: "我会当你最坚实的后盾 (和最软的抱枕)。" }
+        ];
+
+        // --- 页面初始化 ---
+
+        function initPage() {
+            // 1. 设置随机占位符
+            document.getElementById('moodInput').placeholder = placeholders[Math.floor(Math.random() * placeholders.length)];
+
+            // 2. 设置动态欢迎语
+            const hour = new Date().getHours();
+            let welcomeMsg = "";
+            if (hour >= 5 && hour < 12) {
+                welcomeMsg = "早安，席涔☀️ 新的一天，把昨天的烦恼都碎掉吧~";
+            } else if (hour >= 12 && hour < 18) {
+                welcomeMsg = "下午好呀，席涔☕️ 有点累了吗？来这里丢掉坏情绪。";
+            } else if (hour >= 18 && hour < 23) {
+                welcomeMsg = "晚上好，席涔🌙 忙碌一天辛苦啦，清空烦恼好梦哦。";
+            } else {
+                welcomeMsg = "夜深了，席涔⭐️ 无论多晚，这里都为你亮着灯。";
+            }
+            document.getElementById('welcomeText').innerText = welcomeMsg;
+        }
+
+        // 页面加载完成后立即执行初始化
+        window.onload = initPage;
+
+
+        // --- 核心功能区 ---
+
         function crushMood() {
             const input = document.getElementById('moodInput');
             const container = document.getElementById('inputZone');
             const text = input.value.trim();
 
             if (!text) {
-                input.placeholder = "小迷糊，要先写下来才能粉碎哦~";
+                input.placeholder = "小迷糊，要先写下来才能粉碎哦~快写快写！";
                 container.classList.add('shake');
                 setTimeout(() => container.classList.remove('shake'), 500);
                 return;
             }
 
-            // 1. 震动反馈
-            if (navigator.vibrate) navigator.vibrate([50, 30, 50]); // 更有节奏的震动
+            // 1. 震动反馈 (增强版节奏)
+            if (navigator.vibrate) navigator.vibrate([80, 50, 80, 50, 100]);
             
             // 2. 生成爆炸粒子
             createExplosion();
 
-            // 3. 隐藏输入框，显示动画
-            container.style.transition = 'transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.6s'; // 更Q弹的动画效果
-            container.style.transform = 'scale(0.8) translateY(-100px)'; // 向上飞出
+            // 3. 隐藏输入框，显示更Q弹的离场动画
+            container.style.transform = 'scale(0.7) translateY(-150px) rotate(-5deg)';
             container.style.opacity = '0';
+            container.style.pointerEvents = 'none'; // 防止动画过程中误触
 
-            // 4. 显示治愈文字
+            // 4. 准备并显示随机治愈文字
+            showRandomHealingMessage();
+        }
+
+        function showRandomHealingMessage() {
+             // 随机抽取一条信息
+             const randomIndex = Math.floor(Math.random() * healingMessages.length);
+             const message = healingMessages[randomIndex];
+
+             // 填入内容
+             document.getElementById('healingMain').innerText = message.main;
+             document.getElementById('healingSub').innerText = message.sub;
+
+            // 显示治愈区域
             setTimeout(() => {
-                container.style.display = 'none';
                 const healing = document.getElementById('healingZone');
                 healing.style.opacity = '1';
-                healing.style.pointerEvents = 'auto'; // 允许点击重置按钮
+                healing.style.pointerEvents = 'auto';
             }, 600);
         }
 
         function createExplosion() {
-            // 粒子颜色调整为暖色系
-            const colors = ['#ff9a9e', '#fad0c4', '#ffecd2', '#fcb69f', '#ffffff'];
-            const particleCount = 80; // 增加粒子数量
+            // 粒子颜色调整为暖色调+一点点高光
+            const colors = ['#ff9a9e', '#fad0c4', '#fbc2eb', '#ffffff', '#ffd1ff'];
+            const particleCount = 100; // 更多的粒子！
+
+            const containerRect = document.getElementById('inputZone').getBoundingClientRect();
+            const x = containerRect.left + containerRect.width / 2;
+            const y = containerRect.top + containerRect.height / 2;
 
             for (let i = 0; i < particleCount; i++) {
                 const particle = document.createElement('div');
                 particle.classList.add('particle');
                 
-                // 随机位置和大小
-                // 让粒子从容器中心发出
-                const containerRect = document.getElementById('inputZone').getBoundingClientRect();
-                const x = containerRect.left + containerRect.width / 2;
-                const y = containerRect.top + containerRect.height / 2;
-                const size = Math.random() * 8 + 3;
-                
+                const size = Math.random() * 10 + 4;
                 particle.style.width = `${size}px`;
                 particle.style.height = `${size}px`;
                 particle.style.background = colors[Math.floor(Math.random() * colors.length)];
                 particle.style.left = `${x}px`;
                 particle.style.top = `${y}px`;
+                // 随机给一些粒子加上闪烁效果
+                if (Math.random() > 0.7) particle.style.animation = 'shine 0.5s infinite alternate';
                 
                 document.body.appendChild(particle);
 
-                // 随机飞溅方向，扩大范围
-                const destinationX = x + (Math.random() - 0.5) * 800;
-                const destinationY = y + (Math.random() - 0.5) * 800;
-                const rotation = Math.random() * 720;
-                const duration = Math.random() * 1200 + 600;
+                // 爆炸范围更大，更具冲击力
+                const destinationX = x + (Math.random() - 0.5) * 1000;
+                const destinationY = y + (Math.random() - 0.5) * 1000;
+                const rotation = Math.random() * 1080;
+                const duration = Math.random() * 1500 + 800;
 
-                // 执行动画
                 const animation = particle.animate([
-                    { transform: `translate(0, 0) rotate(0deg)`, opacity: 1 },
-                    { transform: `translate(${destinationX - x}px, ${destinationY - y}px) rotate(${rotation}deg)`, opacity: 0 }
+                    { transform: `translate(0, 0) rotate(0deg) scale(1)`, opacity: 1 },
+                    { transform: `translate(${destinationX - x}px, ${destinationY - y}px) rotate(${rotation}deg) scale(0)`, opacity: 0 }
                 ], {
                     duration: duration,
-                    easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)', // 更自然的爆炸曲线
+                    easing: 'cubic-bezier(0.165, 0.84, 0.44, 1)', // easeOutQuart
                     fill: 'forwards'
                 });
 
-                // 动画结束后清理DOM
                 animation.onfinish = () => particle.remove();
             }
         }
@@ -285,17 +396,18 @@
             healing.style.pointerEvents = 'none';
             
             setTimeout(() => {
-                container.style.display = 'block';
-                // 强制重绘
+                // 重新初始化，这样每次重置可能看到不同的占位符和问候语（如果跨时段）
+                initPage();
+                
+                // 强制重绘并执行回弹动画
                 requestAnimationFrame(() => {
-                    container.style.transform = 'scale(1) translateY(0)';
+                    container.style.transform = 'scale(1) translateY(0) rotate(0deg)';
                     container.style.opacity = '1';
+                    container.style.pointerEvents = 'auto';
                     input.value = '';
-                    // input.focus(); // 手机上自动聚焦有时体验不好，可以去掉
                 });
-            }, 300);
+            }, 400);
         }
     </script>
 </body>
 </html>
-
