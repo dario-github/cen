@@ -7,7 +7,7 @@
         content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#16213e">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>席涔的专属坏情绪粉碎机 v3.1</title>
+    <title>阿涔的专属坏情绪粉碎机 v4.0</title>
     <link href="https://fonts.googleapis.com/css2?family=Zcool+KuaiLe&family=Noto+Sans+SC:wght@400;700&display=swap"
         rel="stylesheet">
     <style>
@@ -71,6 +71,7 @@
             gap: 5px;
             font-weight: bold;
             color: var(--gold);
+            font-size: 16px;
         }
 
         .menu-btn {
@@ -203,7 +204,7 @@
             transform: scale(0.96);
         }
 
-        /* --- Overlays (Shop, Dex, Profile) --- */
+        /* --- Overlays --- */
         .overlay {
             position: fixed;
             top: 0;
@@ -264,7 +265,7 @@
             background: var(--gold);
             color: #333;
             border: none;
-            padding: 5px 15px;
+            padding: 8px 15px;
             border-radius: 20px;
             margin-top: 10px;
             font-weight: bold;
@@ -382,6 +383,74 @@
             }
         }
 
+        /* Enhanced Shake */
+        @keyframes shake-hard {
+            0% {
+                transform: translate(0, 0) rotate(0deg);
+            }
+
+            10% {
+                transform: translate(-5px, -5px) rotate(-5deg);
+            }
+
+            20% {
+                transform: translate(5px, 5px) rotate(5deg);
+            }
+
+            30% {
+                transform: translate(-5px, 5px) rotate(-5deg);
+            }
+
+            40% {
+                transform: translate(5px, -5px) rotate(5deg);
+            }
+
+            50% {
+                transform: translate(-5px, -5px) rotate(-5deg);
+            }
+
+            60% {
+                transform: translate(5px, 5px) rotate(5deg);
+            }
+
+            70% {
+                transform: translate(-5px, 5px) rotate(-5deg);
+            }
+
+            80% {
+                transform: translate(5px, -5px) rotate(5deg);
+            }
+
+            90% {
+                transform: translate(-5px, -5px) rotate(-5deg);
+            }
+
+            100% {
+                transform: translate(0, 0) rotate(0deg);
+            }
+        }
+
+        /* Flash Effect */
+        .flash-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 999;
+            transition: opacity 0.1s;
+        }
+
+        /* Particle */
+        .particle {
+            position: absolute;
+            pointer-events: none;
+            z-index: 60;
+        }
+
         /* Toast Notification */
         .toast {
             position: fixed;
@@ -402,10 +471,30 @@
         .toast.show {
             transform: translateX(-50%) translateY(0);
         }
+
+        /* Settings Area */
+        .settings-area {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+
+        .settings-btn {
+            background: #444;
+            color: #fff;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            margin-right: 10px;
+            cursor: pointer;
+        }
     </style>
 </head>
 
 <body>
+
+    <div class="flash-overlay" id="flashOverlay"></div>
 
     <!-- Header -->
     <div class="app-header">
@@ -426,12 +515,12 @@
         </div>
 
         <h2 style="margin: 0 0 5px 0; font-family: 'Zcool KuaiLe'; font-weight: normal; color: var(--primary);">
-            席涔的专属坏情绪粉碎机
+            阿涔的专属坏情绪粉碎机
         </h2>
         <div class="welcome-text" id="welcomeText">...</div>
 
         <div class="input-card" id="inputCard">
-            <textarea id="moodInput" placeholder="席涔，把烦恼都倒进这里吧..."></textarea>
+            <textarea id="moodInput" placeholder="阿涔，把烦恼都倒进这里吧..."></textarea>
             <button class="voice-btn" id="voiceBtn" title="语音输入">
                 <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none"
                     stroke-linecap="round" stroke-linejoin="round">
@@ -443,7 +532,7 @@
             </button>
         </div>
 
-        <button class="crush-btn" onclick="game.crush()">💥 帮席涔粉碎烦恼 💥</button>
+        <button class="crush-btn" onclick="game.crush()">💥 帮阿涔粉碎烦恼 💥</button>
     </div>
 
     <!-- Monster Container -->
@@ -471,6 +560,13 @@
                 <h3>解压商店</h3>
                 <p>消费金币</p>
             </div>
+        </div>
+
+        <div class="settings-area">
+            <h4>数据备份</h4>
+            <p style="font-size:12px; color:#aaa; margin-bottom:10px;">如果清理缓存，进度会丢失。请定期备份代码。</p>
+            <button class="settings-btn" onclick="game.exportSave()">📋 复制存档码</button>
+            <button class="settings-btn" onclick="game.importSave()">📥 读取存档码</button>
         </div>
     </div>
 
@@ -518,16 +614,16 @@
         };
 
         const SHOP_ITEMS = [
-            { id: 'w_laser', name: '激光射线', type: 'weapon', price: 50, icon: '⚡️' },
-            { id: 'w_bomb', name: '核能爆破', type: 'weapon', price: 100, icon: '💣' },
-            { id: 'w_blackhole', name: '黑洞吞噬', type: 'weapon', price: 200, icon: '🕳️' },
-            { id: 'w_clock', name: '时间静止', type: 'weapon', price: 300, icon: '⏰' },
-            { id: 'w_angel', name: '天使净化', type: 'weapon', price: 500, icon: '👼' },
-            { id: 'w_cat', name: '喵喵拳', type: 'weapon', price: 800, icon: '🐾' },
+            { id: 'w_laser', name: '激光射线', type: 'weapon', price: 200, icon: '⚡️' },
+            { id: 'w_bomb', name: '核能爆破', type: 'weapon', price: 500, icon: '💣' },
+            { id: 'w_blackhole', name: '黑洞吞噬', type: 'weapon', price: 1000, icon: '🕳️' },
+            { id: 'w_clock', name: '时间静止', type: 'weapon', price: 2000, icon: '⏰' },
+            { id: 'w_angel', name: '天使净化', type: 'weapon', price: 3000, icon: '👼' },
+            { id: 'w_cat', name: '喵喵拳', type: 'weapon', price: 5000, icon: '🐾' },
             { id: 't_dark', name: '暗夜模式', type: 'theme', price: 0, icon: '🌙' },
-            { id: 't_forest', name: '森林氧吧', type: 'theme', price: 150, icon: '🌲' },
-            { id: 't_candy', name: '糖果世界', type: 'theme', price: 300, icon: '🍬' },
-            { id: 't_star', name: '星空漫步', type: 'theme', price: 500, icon: '🌌' },
+            { id: 't_forest', name: '森林氧吧', type: 'theme', price: 500, icon: '🌲' },
+            { id: 't_candy', name: '糖果世界', type: 'theme', price: 1000, icon: '🍬' },
+            { id: 't_star', name: '星空漫步', type: 'theme', price: 2000, icon: '🌌' },
         ];
 
         // --- Game Class ---
@@ -540,6 +636,14 @@
                 this.renderShop();
                 this.renderDex();
                 this.updateWelcome();
+
+                // Starter Bonus Check
+                if (!this.state.hasStarterBonus) {
+                    this.state.coins += 500;
+                    this.state.hasStarterBonus = true;
+                    this.saveState();
+                    this.showToast("🎁 新手礼包: +500金币!");
+                }
             }
 
             loadState() {
@@ -550,14 +654,41 @@
                     unlockedMonsters: [],
                     inventory: ['w_fist', 't_dark'],
                     equippedWeapon: 'w_fist',
-                    equippedTheme: 't_dark'
+                    equippedTheme: 't_dark',
+                    hasStarterBonus: false
                 };
-                return JSON.parse(localStorage.getItem('rpg_state')) || defaultState;
+                try {
+                    return JSON.parse(localStorage.getItem('rpg_state')) || defaultState;
+                } catch (e) {
+                    return defaultState;
+                }
             }
 
             saveState() {
                 localStorage.setItem('rpg_state', JSON.stringify(this.state));
                 this.updateUI();
+            }
+
+            exportSave() {
+                const code = btoa(JSON.stringify(this.state));
+                navigator.clipboard.writeText(code).then(() => {
+                    this.showToast("✅ 存档码已复制到剪贴板");
+                });
+            }
+
+            importSave() {
+                const code = prompt("请输入存档码:");
+                if (code) {
+                    try {
+                        this.state = JSON.parse(atob(code));
+                        this.saveState();
+                        this.renderShop();
+                        this.renderDex();
+                        this.showToast("✅ 读取成功!");
+                    } catch (e) {
+                        this.showToast("❌ 存档码无效");
+                    }
+                }
             }
 
             initUI() {
@@ -568,9 +699,9 @@
             updateWelcome() {
                 const hour = new Date().getHours();
                 let msg = "";
-                if (hour < 12) msg = "早安，席涔☀️ 又是元气满满的一天！";
-                else if (hour < 18) msg = "下午好，席涔☕️ 累了就来这里歇歇吧。";
-                else msg = "晚上好，席涔🌙 无论多晚，我都陪着你。";
+                if (hour < 12) msg = "早安，阿涔☀️ 又是元气满满的一天！";
+                else if (hour < 18) msg = "下午好，阿涔☕️ 累了就来这里歇歇吧。";
+                else msg = "晚上好，阿涔🌙 无论多晚，我都陪着你。";
                 document.getElementById('welcomeText').innerText = msg;
             }
 
@@ -585,7 +716,7 @@
                     recognition.onend = () => btn.classList.remove('listening');
                     recognition.onresult = (e) => {
                         input.value += e.results[0][0].transcript;
-                        this.playSound('coin'); // Feedback sound
+                        this.playSound('coin');
                     };
                     btn.onclick = () => {
                         this.initAudio();
@@ -611,6 +742,7 @@
                 gain.connect(this.audioCtx.destination);
 
                 const now = this.audioCtx.currentTime;
+
                 if (type === 'coin') {
                     osc.frequency.setValueAtTime(1200, now);
                     osc.frequency.exponentialRampToValueAtTime(2000, now + 0.1);
@@ -618,6 +750,15 @@
                     gain.gain.linearRampToValueAtTime(0, now + 0.3);
                     osc.start(now);
                     osc.stop(now + 0.3);
+                } else if (type === 'smash') {
+                    // Enhanced Smash Sound
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(150, now);
+                    osc.frequency.exponentialRampToValueAtTime(40, now + 0.5);
+                    gain.gain.setValueAtTime(0.8, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
+                    osc.start(now);
+                    osc.stop(now + 0.5);
                 } else if (type === 'levelup') {
                     osc.type = 'triangle';
                     osc.frequency.setValueAtTime(400, now);
@@ -655,7 +796,7 @@
                 const input = document.getElementById('moodInput');
                 const text = input.value.trim();
                 if (!text) {
-                    this.showToast('⚠️ 席涔小迷糊，要先写下来哦！');
+                    this.showToast('⚠️ 阿涔小迷糊，要先写下来哦！');
                     return;
                 }
 
@@ -666,8 +807,10 @@
                     this.renderDex();
                 }
 
-                const xpGain = 10 + Math.floor(text.length / 2);
-                const coinGain = 5 + Math.floor(Math.random() * 5);
+                // Increased Rewards
+                const xpGain = 50 + Math.floor(text.length * 2);
+                const coinGain = 50 + Math.floor(Math.random() * 50);
+
                 this.gainRewards(xpGain, coinGain);
                 this.playAnimation(text, monster);
 
@@ -678,26 +821,47 @@
             gainRewards(xp, coins) {
                 this.state.xp += xp;
                 this.state.coins += coins;
-                this.playSound('coin');
 
                 const nextLevelXP = LEVELS[this.state.level];
                 if (nextLevelXP && this.state.xp >= nextLevelXP) {
                     this.state.level++;
-                    this.showToast(`🆙 席涔升级啦！Lv.${this.state.level}`);
+                    this.showToast(`🆙 阿涔升级啦！Lv.${this.state.level}`);
                     this.playSound('levelup');
+                } else {
+                    this.showToast(`✨ +${coins}金币  +${xp}经验`);
                 }
             }
 
             playAnimation(text, monster) {
                 const container = document.getElementById('monsterContainer');
                 const mText = document.getElementById('monsterText');
+                const flash = document.getElementById('flashOverlay');
 
                 mText.innerText = text;
                 container.style.transform = 'translate(-50%, -50%) scale(1)';
 
+                // Tremble before explosion
                 setTimeout(() => {
-                    document.body.style.animation = 'shake 0.5s';
-                    container.style.transform = 'translate(-50%, -50%) scale(1.5)';
+                    container.style.animation = 'shake-hard 0.5s infinite';
+                }, 100);
+
+                setTimeout(() => {
+                    // Explosion
+                    this.playSound('smash');
+                    if (navigator.vibrate) navigator.vibrate([50, 50, 200]);
+
+                    // Screen Shake
+                    document.body.style.animation = 'shake-hard 0.5s';
+
+                    // Flash
+                    flash.style.opacity = '0.8';
+                    setTimeout(() => flash.style.opacity = '0', 100);
+
+                    // Particles
+                    this.createParticles(window.innerWidth / 2, window.innerHeight / 2);
+
+                    container.style.animation = '';
+                    container.style.transform = 'translate(-50%, -50%) scale(2)';
                     container.style.opacity = '0';
 
                     setTimeout(() => {
@@ -706,6 +870,39 @@
                         document.body.style.animation = '';
                     }, 500);
                 }, 800);
+            }
+
+            createParticles(x, y) {
+                const colors = ['#ff9a9e', '#fad0c4', '#a18cd1', '#ffffff', '#ffd700', '#ff6b6b'];
+                const particleCount = 150; // More particles!
+
+                for (let i = 0; i < particleCount; i++) {
+                    const p = document.createElement('div');
+                    p.classList.add('particle');
+                    document.body.appendChild(p);
+
+                    const size = Math.random() * 10 + 5;
+                    p.style.width = `${size}px`;
+                    p.style.height = `${size}px`;
+                    p.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    p.style.left = `${x}px`;
+                    p.style.top = `${y}px`;
+                    p.style.borderRadius = Math.random() > 0.5 ? '50%' : '0'; // Shapes
+
+                    const angle = Math.random() * Math.PI * 2;
+                    const velocity = Math.random() * 300 + 100;
+                    const tx = Math.cos(angle) * velocity;
+                    const ty = Math.sin(angle) * velocity;
+
+                    p.animate([
+                        { transform: 'translate(0,0) scale(1) rotate(0deg)', opacity: 1 },
+                        { transform: `translate(${tx}px, ${ty}px) scale(0) rotate(${Math.random() * 360}deg)`, opacity: 0 }
+                    ], {
+                        duration: 800 + Math.random() * 400,
+                        easing: 'cubic-bezier(0, .9, .57, 1)',
+                        fill: 'forwards'
+                    }).onfinish = () => p.remove();
+                }
             }
 
             renderShop() {
