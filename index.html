@@ -757,11 +757,7 @@
                 <h3>情绪图鉴</h3>
                 <p>收集度: <span id="dexCount">0</span>/12</p>
             </div>
-            <div class="shop-item" onclick="openOverlay('shopOverlay')">
-                <div style="font-size: 30px;">🛍️</div>
-                <h3>解压商店</h3>
-                <p>消费金币</p>
-            </div>
+            <!-- Removed duplicate Shop entry from Menu since it's on the main screen now -->
         </div>
 
         <div class="settings-area">
@@ -770,13 +766,17 @@
             <button class="settings-btn" onclick="game.exportSave()">📋 复制存档码</button>
             <button class="settings-btn" onclick="game.importSave()">📥 读取存档码</button>
         </div>
-
-        <div class="controls">
-            <button class="btn" onclick="openOverlay('shopOverlay')">🛍️ 商店</button>
-            <button class="btn" onclick="game.toggleHistory()">📜 战绩</button>
-            <button class="btn" onclick="game.toggleSettings()">⚙️ 设置</button>
-        </div>
     </div>
+
+    <!-- Settings Overlay (Reusing Menu Overlay structure for simplicity or creating new one) -->
+    <!-- For now, we'll use the Menu Overlay as the main settings/menu hub to avoid duplication -->
+
+    <div class="controls">
+        <button class="btn" onclick="openOverlay('shopOverlay')">🛍️ 商店</button>
+        <button class="btn" onclick="game.toggleHistory()">📜 战绩</button>
+        <button class="btn" onclick="game.toggleSettings()">⚙️ 设置</button>
+    </div>
+
 
     <!-- History Modal -->
     <div id="historyModal" class="modal">
@@ -920,22 +920,26 @@
             }
 
             importSave() {
-                const code = prompt("请输入存档码:");
-                if (code) {
-                    try {
-                        const importedState = JSON.parse(atob(code));
-                        // Validate imported state structure if necessary
-                        this.state = { ...this.loadState(), ...importedState }; // Merge to ensure all properties exist
-                        this.saveState();
-                        this.renderShop();
-                        this.renderDex();
-                        this.applyTheme(this.state.equippedTheme);
-                        this.applyAvatar(this.state.equippedAvatar);
-                        this.showToast("✅ 读取成功!");
-                    } catch (e) {
-                        this.showToast("❌ 存档码无效");
+                // Use setTimeout to ensure UI is ready and prevent immediate closing issues
+                setTimeout(() => {
+                    const code = prompt("请输入存档码:");
+                    if (code) {
+                        try {
+                            const importedState = JSON.parse(atob(code));
+                            // Validate imported state structure if necessary
+                            this.state = { ...this.loadState(), ...importedState }; // Merge to ensure all properties exist
+                            this.saveState();
+                            this.renderShop();
+                            this.renderDex();
+                            this.applyTheme(this.state.equippedTheme);
+                            this.applyAvatar(this.state.equippedAvatar);
+                            this.showToast("✅ 读取成功!");
+                        } catch (e) {
+                            console.error(e);
+                            this.showToast("❌ 存档码无效");
+                        }
                     }
-                }
+                }, 100);
             }
 
             initUI() {
@@ -1075,6 +1079,7 @@
 
                 input.value = '';
                 this.saveState();
+                this.updateUI(); // Ensure UI updates immediately
             }
 
             gainRewards(xp, coins) {
@@ -1097,34 +1102,43 @@
                 const flash = document.getElementById('flashOverlay');
                 const inputCardRect = document.getElementById('inputCard').getBoundingClientRect();
 
-
                 mText.innerText = text;
+                // 1. Appear
                 container.style.transform = 'translate(-50%, -50%) scale(1)';
+                container.style.opacity = '1';
 
+                // 2. Shake (Wait a bit for user to see it)
                 setTimeout(() => {
-                    container.style.animation = 'shake-hard 0.5s infinite';
-                }, 100);
+                    container.style.animation = 'shake-hard 0.8s infinite'; // Slower shake
+                }, 300);
 
+                // 3. Crush/Explode
                 setTimeout(() => {
                     this.playSound('smash');
                     if (navigator.vibrate) navigator.vibrate([50, 50, 200]);
 
                     document.body.style.animation = 'shake-hard 0.5s';
                     flash.style.opacity = '0.8';
-                    setTimeout(() => flash.style.opacity = '0', 100);
+                    setTimeout(() => flash.style.opacity = '0', 300); // Slower flash fade
 
                     this.createParticles(inputCardRect.left + inputCardRect.width / 2, inputCardRect.top + inputCardRect.height / 2);
 
                     container.style.animation = '';
                     container.style.transform = 'translate(-50%, -50%) scale(2)';
                     container.style.opacity = '0';
+                    container.style.transition = 'transform 0.5s ease-out, opacity 0.5s ease-out'; // Smooth exit
 
                     setTimeout(() => {
+                        // Reset for next time
+                        container.style.transition = 'none';
                         container.style.transform = 'translate(-50%, -50%) scale(0)';
                         container.style.opacity = '1';
                         document.body.style.animation = '';
+
+                        // Update UI after animation to ensure user sees the effect first
+                        this.updateUI();
                     }, 500);
-                }, 800);
+                }, 1500); // Longer wait before crush (1.5s)
             }
 
             createParticles(x, y) {
@@ -1178,7 +1192,9 @@
 
                     items.forEach(item => {
                         const owned = this.state.inventory.includes(item.id);
-                        const isEquipped = this.state.equippedTheme === item.id || this.state.equippedWeapon === item.id || this.state.equippedAvatar === item.id;
+                        const isEquipped = (item.type === 'theme' && this.state.equippedTheme === item.id) ||
+                            (item.type === 'weapon' && this.state.equippedWeapon === item.id) ||
+                            (item.type === 'avatar' && this.state.equippedAvatar === item.id);
 
                         const el = document.createElement('div');
                         el.className = `shop-item ${owned ? 'owned' : ''}`;
@@ -1188,9 +1204,14 @@
                             <p>${owned ? (isEquipped ? '✅ 已装备' : '已拥有') : '💰 ' + item.price}</p>
                             <button class="buy-btn" ${!owned && this.state.coins < item.price ? 'disabled' : ''}
                                 onclick="game.handleShopItem('${item.id}')">
-                                ${owned ? (isEquipped ? '已装备' : '装备') : '购买'}
+                                ${owned ? (isEquipped ? '✅ 已装备' : '装备') : '💰 ' + item.price}
                             </button>
                         `;
+                        // Add visual border for equipped items
+                        if (isEquipped) {
+                            el.style.border = '2px solid var(--gold)';
+                            el.style.boxShadow = '0 0 15px var(--gold)';
+                        }
                         grid.appendChild(el);
                     });
 
@@ -1246,6 +1267,58 @@
                 if (item && item.filter) {
                     document.getElementById('playerAvatar').style.filter = item.filter;
                 }
+            }
+
+            toggleHistory() {
+                const modal = document.getElementById('historyModal');
+                if (modal.style.display === 'flex') {
+                    modal.style.display = 'none';
+                } else {
+                    this.renderHistory();
+                    modal.style.display = 'flex';
+                }
+            }
+
+            renderHistory() {
+                const list = document.getElementById('historyList');
+                list.innerHTML = '';
+                if (!this.state.history || this.state.history.length === 0) {
+                    list.innerHTML = '<div class="empty-history">还没有粉碎过烦恼哦~</div>';
+                    return;
+                }
+                // Show latest first
+                [...this.state.history].reverse().forEach(item => {
+                    const el = document.createElement('div');
+                    el.className = 'history-item';
+                    el.innerHTML = `
+                        <div class="history-header">
+                            <span>${new Date(item.date).toLocaleString()}</span>
+                            <span>${item.monster}</span>
+                        </div>
+                        <div class="history-content">${item.text}</div>
+                        <div class="history-weapon">武器: ${SHOP_ITEMS.find(i => i.id === item.weapon)?.name || '未知'}</div>
+                    `;
+                    list.appendChild(el);
+                });
+            }
+
+            addToHistory(text) {
+                const monster = this.identifyMonster(text);
+                const entry = {
+                    date: Date.now(),
+                    text: text,
+                    monster: monster.name,
+                    weapon: this.state.equippedWeapon
+                };
+                if (!this.state.history) this.state.history = [];
+                this.state.history.push(entry);
+                // Keep only last 50
+                if (this.state.history.length > 50) this.state.history.shift();
+                this.saveState();
+            }
+
+            toggleSettings() {
+                toggleMenu();
             }
 
             renderDex() {
