@@ -3,410 +3,621 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>席涔的专属坏情绪粉碎机</title>
+    <title>席涔的专属坏情绪粉碎机 2.0</title>
+    <link href="https://fonts.googleapis.com/css2?family=Zcool+KuaiLe&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #ff9a9e; /* 柔和的粉色 */
-            --secondary-color: #fad0c4; /* 更浅的粉色渐变色 */
-            --accent-color: #fbc2eb; /* 一点点紫色调 */
-            --bg-color: #2c2c34;
-            --text-color: #fcecec;
+            --primary-color: #ff9a9e;
+            --primary-dark: #e87c82;
+            --secondary-color: #fad0c4;
+            --accent-color: #a18cd1;
+            --bg-dark: #1a1a2e;
+            --bg-light: #16213e;
+            --text-color: #fff;
+            --monster-color: #4a4e69;
         }
 
         body {
             margin: 0;
             padding: 0;
-            background: linear-gradient(135deg, #2c2c34 0%, #434353 100%);
+            background: radial-gradient(circle at center, var(--bg-light) 0%, var(--bg-dark) 100%);
             color: var(--text-color);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: 'Noto Sans SC', sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             min-height: 100vh;
-            overflow-x: hidden;
-            padding: 20px 0;
-            box-sizing: border-box;
+            overflow: hidden; /* Prevent scroll during animations */
+            touch-action: manipulation;
         }
 
-        /* 入场动画 */
-        .fade-in-up {
-            animation: fadeInUp 0.8s ease-out forwards;
-            opacity: 0;
-            transform: translateY(20px);
-        }
-
-        @keyframes fadeInUp {
-            to { opacity: 1; transform: translateY(0); }
+        /* 粒子背景 */
+        #particles-js {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
         }
 
         .container {
-            text-align: center;
-            width: 85%;
-            max-width: 400px;
             position: relative;
             z-index: 2;
-            background: rgba(255, 255, 255, 0.06);
-            padding: 35px 25px;
-            border-radius: 30px;
-            box-shadow: 0 10px 40px -10px rgba(255, 154, 158, 0.3);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+            width: 90%;
+            max-width: 420px;
+            text-align: center;
+            padding: 20px;
+            perspective: 1000px;
+        }
+
+        .header-area {
+            margin-bottom: 30px;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .avatar-container {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 15px;
         }
 
         .cartoon-avatar {
-            width: 130px;
-            height: 130px;
+            width: 100%;
+            height: 100%;
             border-radius: 50%;
             object-fit: cover;
-            margin-bottom: 10px;
             border: 4px solid var(--primary-color);
-            box-shadow: 0 6px 20px rgba(255, 154, 158, 0.4);
-            animation: float 3.5s ease-in-out infinite;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-12px); }
+            box-shadow: 0 0 20px rgba(255, 154, 158, 0.6);
+            background: #fff; /* Fallback */
         }
 
         h1 {
-            font-weight: 600;
-            margin: 5px 0 15px 0;
-            color: var(--text-color);
-            font-size: 26px;
-            text-shadow: 0 2px 10px rgba(255, 154, 158, 0.3);
+            font-family: 'Zcool KuaiLe', cursive;
+            font-size: 28px;
+            margin: 0;
+            background: linear-gradient(to right, #ff9a9e, #fecfef);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
 
-        .personalized-title { color: var(--primary-color); }
-
-        /* 动态欢迎语小标题 */
-        .welcome-subtitle {
-            font-size: 15px;
-            color: var(--secondary-color);
-            margin-bottom: 25px;
-            font-weight: 300;
+        .subtitle {
+            font-size: 14px;
+            color: rgba(255,255,255,0.7);
+            margin-top: 8px;
             letter-spacing: 1px;
+        }
+
+        /* 输入区域 */
+        .input-wrapper {
+            position: relative;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
         textarea {
             width: 100%;
-            height: 150px;
-            background: rgba(255, 255, 255, 0.08);
-            border: 2px solid rgba(255, 255, 255, 0.12);
-            border-radius: 22px;
-            padding: 18px;
+            height: 120px;
+            background: transparent;
+            border: none;
             color: #fff;
             font-size: 16px;
             resize: none;
-            box-sizing: border-box;
             outline: none;
-            transition: all 0.3s;
-            line-height: 1.5;
+            font-family: inherit;
+            line-height: 1.6;
         }
 
-        textarea:focus {
-            background: rgba(255, 255, 255, 0.12);
-            border-color: var(--accent-color);
-            box-shadow: 0 0 15px rgba(251, 194, 235, 0.2);
+        textarea::placeholder {
+            color: rgba(255, 255, 255, 0.3);
         }
 
-        textarea::placeholder { color: rgba(255, 255, 255, 0.45); }
-
-        .btn {
-            margin-top: 35px;
-            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+        /* 语音按钮 */
+        .voice-btn {
+            position: absolute;
+            bottom: 15px;
+            right: 15px;
+            background: rgba(255, 255, 255, 0.1);
             border: none;
-            padding: 16px 55px;
-            color: #6a4f4f;
-            font-size: 18px;
-            font-weight: 700;
-            border-radius: 60px;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
             cursor: pointer;
-            box-shadow: 0 8px 25px rgba(255, 154, 158, 0.5);
-            transition: all 0.2s;
-            -webkit-tap-highlight-color: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            color: var(--primary-color);
+        }
+
+        .voice-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.1);
+        }
+
+        .voice-btn.listening {
+            background: var(--primary-color);
+            color: #fff;
+            animation: pulse 1.5s infinite;
+        }
+
+        /* 坏情绪实体化 - 小怪兽 */
+        .mood-monster-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            width: 200px;
+            height: 200px;
+            z-index: 10;
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .mood-monster {
+            width: 140px;
+            height: 140px;
+            background: var(--monster-color);
+            border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
             position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+            box-shadow: inset -10px -10px 20px rgba(0,0,0,0.5), 0 10px 30px rgba(0,0,0,0.5);
+            animation: morph 4s ease-in-out infinite;
             overflow: hidden;
         }
 
-        .btn:active { transform: scale(0.96); box-shadow: 0 4px 15px rgba(255, 154, 158, 0.4); }
-        
-        /* 按钮光效 */
-        .btn::after {
+        .monster-face {
+            position: absolute;
+            top: 30%;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .eye {
+            width: 15px;
+            height: 15px;
+            background: #fff;
+            border-radius: 50%;
+            position: relative;
+            animation: blink 3s infinite;
+        }
+
+        .eye::after {
             content: '';
             position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(rgba(255,255,255,0.2), rgba(255,255,255,0));
-            transform: rotate(30deg);
-            animation: shine 3s infinite;
+            width: 6px;
+            height: 6px;
+            background: #000;
+            border-radius: 50%;
+            top: 4px;
+            left: 4px;
         }
-        @keyframes shine {
-            to { transform: rotate(30deg) translate(100%, 100%); }
+
+        .mouth {
+            position: absolute;
+            bottom: 30%;
+            width: 30px;
+            height: 10px;
+            background: #000;
+            border-radius: 10px;
+        }
+
+        .monster-text {
+            position: relative;
+            z-index: 2;
+            font-size: 12px;
+            color: rgba(255,255,255,0.8);
+            word-break: break-all;
+            max-height: 100%;
+            overflow: hidden;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+            opacity: 0.5;
+        }
+
+        /* 拳头动画 */
+        .fist {
+            position: absolute;
+            font-size: 100px;
+            top: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            z-index: 20;
+            pointer-events: none;
+        }
+
+        /* 按钮 */
+        .action-btn {
+            margin-top: 30px;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            border: none;
+            padding: 18px 60px;
+            color: #fff;
+            font-size: 20px;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(255, 154, 158, 0.4);
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
+            font-family: 'Zcool KuaiLe', cursive;
+            letter-spacing: 2px;
+        }
+
+        .action-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* 治愈卡片 */
+        .healing-card {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.8);
+            width: 85%;
+            max-width: 360px;
+            background: rgba(255, 255, 255, 0.95);
+            color: #333;
+            padding: 40px 30px;
+            border-radius: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+            text-align: center;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 100;
+            transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .healing-card.show {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .healing-emoji {
+            font-size: 60px;
+            margin-bottom: 20px;
+            display: block;
+            animation: bounce 2s infinite;
+        }
+
+        .healing-text {
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+
+        .healing-sub {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .restart-btn {
+            background: transparent;
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            padding: 10px 30px;
+            border-radius: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .restart-btn:hover {
+            background: var(--primary-color);
+            color: #fff;
+        }
+
+        /* 动画定义 */
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(255, 154, 158, 0.7); }
+            70% { box-shadow: 0 0 0 15px rgba(255, 154, 158, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 154, 158, 0); }
+        }
+
+        @keyframes morph {
+            0% { border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%; }
+            34% { border-radius: 70% 30% 50% 50% / 30% 30% 70% 70%; }
+            67% { border-radius: 100% 60% 60% 100% / 100% 100% 60% 60%; }
+            100% { border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%; }
+        }
+
+        @keyframes blink {
+            0%, 96%, 100% { height: 15px; }
+            98% { height: 2px; }
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes smash {
+            0% { transform: translateX(-50%) translateY(-200px) scale(1); opacity: 1; }
+            50% { transform: translateX(-50%) translateY(0) scale(1.5); opacity: 1; }
+            70% { transform: translateX(-50%) translateY(0) scale(1.5); opacity: 1; }
+            100% { transform: translateX(-50%) translateY(-50px) scale(1); opacity: 0; }
+        }
+
+        @keyframes shake-hard {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            10% { transform: translate(-1px, -2px) rotate(-1deg); }
+            20% { transform: translate(-3px, 0px) rotate(1deg); }
+            30% { transform: translate(3px, 2px) rotate(0deg); }
+            40% { transform: translate(1px, -1px) rotate(1deg); }
+            50% { transform: translate(-1px, 2px) rotate(-1deg); }
+            60% { transform: translate(-3px, 1px) rotate(0deg); }
+            70% { transform: translate(3px, 1px) rotate(-1deg); }
+            80% { transform: translate(-1px, -1px) rotate(1deg); }
+            90% { transform: translate(1px, 2px) rotate(0deg); }
+            100% { transform: translate(1px, -2px) rotate(-1deg); }
         }
 
         .particle {
             position: absolute;
-            background: var(--primary-color);
+            pointer-events: none;
             border-radius: 50%;
-            pointer-events: none;
-            z-index: 10;
         }
 
-        .healing-zone {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 90%;
-            max-width: 380px;
-            text-align: center;
-            opacity: 0;
-            pointer-events: none;
-            transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1);
-            z-index: 5;
-        }
-
-        .healing-content {
-            /* 增加一个半透明背景让文字更清晰 */
-            background: rgba(44, 44, 52, 0.8);
-            padding: 30px;
-            border-radius: 25px;
-            backdrop-filter: blur(5px);
-            border: 1px solid rgba(255,154,158, 0.2);
-        }
-
-        /* 治愈文字的主体 */
-        .healing-main-text {
-            font-size: 24px;
-            font-weight: 600;
-            color: var(--primary-color);
-            margin-bottom: 20px;
-            line-height: 1.4;
-        }
-
-        /* 治愈文字的小尾巴 */
-        .healing-sub-text {
-            font-size: 15px;
-            color: rgba(255,255,255,0.7);
-            font-style: italic;
-        }
-        
-        .reset-btn {
-            background: transparent;
-            border: 2px solid var(--secondary-color);
-            color: var(--secondary-color);
-            padding: 10px 30px;
-            border-radius: 30px;
-            margin-top: 30px;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .reset-btn:hover {
-             background: var(--secondary-color);
-             color: var(--bg-color);
-        }
-
-        .shake { animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both; }
-        @keyframes shake {
-            10%, 90% { transform: translate3d(-1px, 0, 0); }
-            20%, 80% { transform: translate3d(2px, 0, 0); }
-            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
-            40%, 60% { transform: translate3d(4px, 0, 0); }
-        }
     </style>
 </head>
 <body>
 
-    <div class="container fade-in-up" id="inputZone">
-        <img src="cartoon.png" alt="席涔的卡通形象" class="cartoon-avatar">
-        
-        <h1><span class="personalized-title">席涔</span>的坏情绪粉碎机</h1>
-        <div class="welcome-subtitle" id="welcomeText">正在加载贴心问候...</div>
+    <div class="container" id="mainContainer">
+        <div class="header-area">
+            <div class="avatar-container">
+                <img src="cartoon.png" alt="Avatar" class="cartoon-avatar">
+            </div>
+            <h1>席涔的坏情绪粉碎机</h1>
+            <div class="subtitle" id="welcomeText">加载中...</div>
+        </div>
 
-        <textarea id="moodInput"></textarea>
-        <button class="btn" onclick="crushMood()">💥 启动超级粉碎 💥</button>
+        <div class="input-wrapper" id="inputWrapper">
+            <textarea id="moodInput" placeholder="在这里写下所有不开心..."></textarea>
+            <button class="voice-btn" id="voiceBtn" title="语音输入">
+                <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
+            </button>
+        </div>
+
+        <button class="action-btn" onclick="startDestruction()">💥 彻底粉碎 💥</button>
     </div>
 
-    <div class="healing-zone" id="healingZone">
-        <div class="healing-content">
-            <div class="healing-main-text" id="healingMain"></div>
-            <div class="healing-sub-text" id="healingSub"></div>
-            <button class="reset-btn" onclick="reset()">再来一次</button>
+    <!-- 坏情绪小怪兽 -->
+    <div class="mood-monster-container" id="monsterContainer">
+        <div class="mood-monster">
+            <div class="monster-face">
+                <div class="eye"></div>
+                <div class="eye"></div>
+            </div>
+            <div class="mouth"></div>
+            <div class="monster-text" id="monsterText"></div>
         </div>
     </div>
 
+    <!-- 拳头特效 -->
+    <div class="fist" id="fist">👊</div>
+
+    <!-- 治愈卡片 -->
+    <div class="healing-card" id="healingCard">
+        <span class="healing-emoji" id="healingEmoji">✨</span>
+        <div class="healing-text" id="healingMain"></div>
+        <div class="healing-sub" id="healingSub"></div>
+        <button class="restart-btn" onclick="reset()">再来一次</button>
+    </div>
+
     <script>
-        // --- 数据准备区 ---
-
-        // 输入框的随机占位符
-        const placeholders = [
-            "亲爱的，谁惹你不开心了？写下来，我替你揍它！",
-            "有什么烦心事都倒在这里吧，这里是你的专属树洞...",
-            "小脑袋里装了什么不开心？快丢进来，我们要装满快乐！",
-            "嘘...把秘密和烦恼都告诉我，粉碎完就只有天知地知你知我知啦。"
-        ];
-
-        // 随机治愈/逗趣文案库 (核心部分!)
-        // main: 主要的反馈文字，字体较大
-        // sub: 下方的小字，通常是安慰或调侃
+        // --- 配置与数据 ---
         const healingMessages = [
-            { main: "✨ Biu~ 刚才那个烦恼被我发射到外太空啦！", sub: "现在它是一只傻傻的外星人了，别理它。" },
-            { main: "抱抱你。你已经做得超级棒了，真的。", sub: "不要对自己太苛刻，偶尔偷懒也没关系哦。" },
-            { main: "报告长官！敌军（坏情绪）已被全歼！💥", sub: "请求奖励一个亲亲~ 😘 (凑不要脸地伸头)" },
-            { main: "烦恼已永久删除。现在，深呼吸...", sub: "世界依然很爱你，而我最爱你❤️" },
-            { main: "别怕，有我在呢。天大的事，睡一觉就变小了。", sub: "今晚月亮不营业，我来照亮你。" },
-            { main: "坏心情已被粉碎成渣渣，建议用一杯奶茶冲服！🥤", sub: "如果一杯不够，那就两杯！" },
-            { main: "席涔是最棒的！区区小烦恼，根本不是你的对手。", sub: "给你满分不怕你骄傲！💯" },
-            { main: "雨过天晴啦！快看，彩虹在等你抬头呢 ✨", sub: "所有的不开心，都是为了迎接后面的大好运！" },
-            { main: "摸摸头，呼噜呼噜毛，吓不着~", sub: "在我这里，你可以永远当个小朋友。" },
-            { main: "系统检测到你的可爱值正在上升...📈", sub: "糟糕，要爆表了！快笑一个中和一下！" },
-            { main: "已经拜托风把不开心都吹走啦~", sub: "剩下的只有温柔的风和你。" },
-            { main: "无论发生什么，记得你身后一直有我。", sub: "我会当你最坚实的后盾 (和最软的抱枕)。" }
+            { emoji: "🚀", main: "Biu~ 烦恼已发射到外太空！", sub: "它现在是宇宙里的一粒尘埃了。" },
+            { emoji: "🌈", main: "雨过天晴，彩虹在等你！", sub: "所有的不开心都是为了迎接好运。" },
+            { emoji: "🍬", main: "坏心情粉碎成功！", sub: "奖励你一颗甜甜的糖果（云享用）。" },
+            { emoji: "🛡️", main: "席涔是最棒的！", sub: "区区小烦恼，根本破不了你的防。" },
+            { emoji: "🛁", main: "洗个热水澡，睡个好觉。", sub: "明天又是元气满满的一天！" },
+            { emoji: "🐱", main: "摸摸头，呼噜呼噜毛。", sub: "在我这里，你可以永远当个小朋友。" }
         ];
 
-        // --- 页面初始化 ---
+        const placeholders = [
+            "谁惹你不开心了？写下来，我替你揍它！",
+            "把烦恼都倒进这里，我们要装满快乐！",
+            "嘘...把秘密告诉我，粉碎完就没人知道啦。",
+            "今天遇到了什么讨厌的事？"
+        ];
 
-        function initPage() {
-            // 1. 设置随机占位符
+        // --- 初始化 ---
+        window.onload = function() {
+            updateWelcome();
             document.getElementById('moodInput').placeholder = placeholders[Math.floor(Math.random() * placeholders.length)];
+        };
 
-            // 2. 设置动态欢迎语
+        function updateWelcome() {
             const hour = new Date().getHours();
-            let welcomeMsg = "";
-            if (hour >= 5 && hour < 12) {
-                welcomeMsg = "早安，席涔☀️ 新的一天，把昨天的烦恼都碎掉吧~";
-            } else if (hour >= 12 && hour < 18) {
-                welcomeMsg = "下午好呀，席涔☕️ 有点累了吗？来这里丢掉坏情绪。";
-            } else if (hour >= 18 && hour < 23) {
-                welcomeMsg = "晚上好，席涔🌙 忙碌一天辛苦啦，清空烦恼好梦哦。";
-            } else {
-                welcomeMsg = "夜深了，席涔⭐️ 无论多晚，这里都为你亮着灯。";
-            }
-            document.getElementById('welcomeText').innerText = welcomeMsg;
+            let msg = "";
+            if (hour < 12) msg = "早安，席涔☀️ 新的一天，把昨天的烦恼都碎掉吧~";
+            else if (hour < 18) msg = "下午好，席涔☕️ 累了吗？来这里歇歇。";
+            else msg = "晚上好，席涔🌙 清空烦恼，做个好梦。";
+            document.getElementById('welcomeText').innerText = msg;
         }
 
-        // 页面加载完成后立即执行初始化
-        window.onload = initPage;
+        // --- 语音输入 ---
+        const voiceBtn = document.getElementById('voiceBtn');
+        const moodInput = document.getElementById('moodInput');
+        let recognition;
 
+        if ('webkitSpeechRecognition' in window) {
+            recognition = new webkitSpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            recognition.lang = 'zh-CN';
 
-        // --- 核心功能区 ---
+            recognition.onstart = () => {
+                voiceBtn.classList.add('listening');
+            };
 
-        function crushMood() {
-            const input = document.getElementById('moodInput');
-            const container = document.getElementById('inputZone');
-            const text = input.value.trim();
+            recognition.onend = () => {
+                voiceBtn.classList.remove('listening');
+            };
 
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                moodInput.value += transcript;
+            };
+
+            voiceBtn.onclick = () => {
+                recognition.start();
+            };
+        } else {
+            voiceBtn.style.display = 'none'; // 不支持则隐藏
+        }
+
+        // --- 核心逻辑 ---
+        function startDestruction() {
+            const text = moodInput.value.trim();
             if (!text) {
-                input.placeholder = "小迷糊，要先写下来才能粉碎哦~快写快写！";
-                container.classList.add('shake');
-                setTimeout(() => container.classList.remove('shake'), 500);
+                shakeElement(document.getElementById('inputWrapper'));
+                moodInput.placeholder = "先写下烦恼，我才能帮你粉碎它呀！";
                 return;
             }
 
-            // 1. 震动反馈 (增强版节奏)
-            if (navigator.vibrate) navigator.vibrate([80, 50, 80, 50, 100]);
-            
-            // 2. 生成爆炸粒子
-            createExplosion();
+            // 1. 召唤小怪兽 (将文字实体化)
+            const monsterContainer = document.getElementById('monsterContainer');
+            const monsterText = document.getElementById('monsterText');
+            const mainContainer = document.getElementById('mainContainer');
 
-            // 3. 隐藏输入框，显示更Q弹的离场动画
-            container.style.transform = 'scale(0.7) translateY(-150px) rotate(-5deg)';
-            container.style.opacity = '0';
-            container.style.pointerEvents = 'none'; // 防止动画过程中误触
+            monsterText.innerText = text;
 
-            // 4. 准备并显示随机治愈文字
-            showRandomHealingMessage();
-        }
+            // 隐藏输入框，显示怪兽
+            mainContainer.style.transition = 'all 0.5s';
+            mainContainer.style.transform = 'scale(0.8) translateY(50px)';
+            mainContainer.style.opacity = '0.3';
+            mainContainer.style.filter = 'blur(4px)';
 
-        function showRandomHealingMessage() {
-             // 随机抽取一条信息
-             const randomIndex = Math.floor(Math.random() * healingMessages.length);
-             const message = healingMessages[randomIndex];
+            monsterContainer.style.transform = 'translate(-50%, -50%) scale(1)';
 
-             // 填入内容
-             document.getElementById('healingMain').innerText = message.main;
-             document.getElementById('healingSub').innerText = message.sub;
-
-            // 显示治愈区域
+            // 2. 延迟后开始粉碎动画
             setTimeout(() => {
-                const healing = document.getElementById('healingZone');
-                healing.style.opacity = '1';
-                healing.style.pointerEvents = 'auto';
-            }, 600);
+                performAttack();
+            }, 800);
         }
 
-        function createExplosion() {
-            // 粒子颜色调整为暖色调+一点点高光
-            const colors = ['#ff9a9e', '#fad0c4', '#fbc2eb', '#ffffff', '#ffd1ff'];
-            const particleCount = 100; // 更多的粒子！
+        function performAttack() {
+            const fist = document.getElementById('fist');
+            const monster = document.querySelector('.mood-monster');
 
-            const containerRect = document.getElementById('inputZone').getBoundingClientRect();
-            const x = containerRect.left + containerRect.width / 2;
-            const y = containerRect.top + containerRect.height / 2;
+            // 拳头落下
+            fist.style.animation = 'smash 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards';
 
-            for (let i = 0; i < particleCount; i++) {
-                const particle = document.createElement('div');
-                particle.classList.add('particle');
-                
-                const size = Math.random() * 10 + 4;
-                particle.style.width = `${size}px`;
-                particle.style.height = `${size}px`;
-                particle.style.background = colors[Math.floor(Math.random() * colors.length)];
-                particle.style.left = `${x}px`;
-                particle.style.top = `${y}px`;
-                // 随机给一些粒子加上闪烁效果
-                if (Math.random() > 0.7) particle.style.animation = 'shine 0.5s infinite alternate';
-                
-                document.body.appendChild(particle);
+            // 击中时刻
+            setTimeout(() => {
+                // 震动
+                if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+                document.body.style.animation = 'shake-hard 0.5s';
 
-                // 爆炸范围更大，更具冲击力
-                const destinationX = x + (Math.random() - 0.5) * 1000;
-                const destinationY = y + (Math.random() - 0.5) * 1000;
-                const rotation = Math.random() * 1080;
-                const duration = Math.random() * 1500 + 800;
+                // 粒子爆炸
+                createExplosion(window.innerWidth / 2, window.innerHeight / 2);
 
-                const animation = particle.animate([
-                    { transform: `translate(0, 0) rotate(0deg) scale(1)`, opacity: 1 },
-                    { transform: `translate(${destinationX - x}px, ${destinationY - y}px) rotate(${rotation}deg) scale(0)`, opacity: 0 }
-                ], {
-                    duration: duration,
-                    easing: 'cubic-bezier(0.165, 0.84, 0.44, 1)', // easeOutQuart
-                    fill: 'forwards'
-                });
+                // 怪兽消失
+                document.getElementById('monsterContainer').style.transform = 'translate(-50%, -50%) scale(0)';
 
-                animation.onfinish = () => particle.remove();
-            }
+                // 显示治愈卡片
+                setTimeout(showHealing, 800);
+
+            }, 300); // 对应 smash 动画的击中时间点
+
+            // 清理动画样式以便重置
+            setTimeout(() => {
+                fist.style.animation = '';
+                document.body.style.animation = '';
+            }, 1000);
+        }
+
+        function showHealing() {
+            const msg = healingMessages[Math.floor(Math.random() * healingMessages.length)];
+            document.getElementById('healingEmoji').innerText = msg.emoji;
+            document.getElementById('healingMain').innerText = msg.main;
+            document.getElementById('healingSub').innerText = msg.sub;
+
+            document.getElementById('healingCard').classList.add('show');
         }
 
         function reset() {
-            const container = document.getElementById('inputZone');
-            const healing = document.getElementById('healingZone');
+            const mainContainer = document.getElementById('mainContainer');
+            const monsterContainer = document.getElementById('monsterContainer');
+            const healingCard = document.getElementById('healingCard');
             const input = document.getElementById('moodInput');
 
-            healing.style.opacity = '0';
-            healing.style.pointerEvents = 'none';
-            
+            healingCard.classList.remove('show');
+
             setTimeout(() => {
-                // 重新初始化，这样每次重置可能看到不同的占位符和问候语（如果跨时段）
-                initPage();
-                
-                // 强制重绘并执行回弹动画
-                requestAnimationFrame(() => {
-                    container.style.transform = 'scale(1) translateY(0) rotate(0deg)';
-                    container.style.opacity = '1';
-                    container.style.pointerEvents = 'auto';
-                    input.value = '';
-                });
-            }, 400);
+                mainContainer.style.transform = 'none';
+                mainContainer.style.opacity = '1';
+                mainContainer.style.filter = 'none';
+                input.value = '';
+                monsterContainer.style.transform = 'translate(-50%, -50%) scale(0)';
+                updateWelcome();
+            }, 300);
+        }
+
+        // --- 工具函数 ---
+        function shakeElement(el) {
+            el.style.animation = 'shake-hard 0.4s';
+            setTimeout(() => el.style.animation = '', 400);
+        }
+
+        function createExplosion(x, y) {
+            const colors = ['#ff9a9e', '#fad0c4', '#a18cd1', '#ffffff'];
+            const particleCount = 60;
+
+            for (let i = 0; i < particleCount; i++) {
+                const p = document.createElement('div');
+                p.classList.add('particle');
+                document.body.appendChild(p);
+
+                const size = Math.random() * 8 + 4;
+                p.style.width = `${size}px`;
+                p.style.height = `${size}px`;
+                p.style.background = colors[Math.floor(Math.random() * colors.length)];
+                p.style.left = `${x}px`;
+                p.style.top = `${y}px`;
+
+                const angle = Math.random() * Math.PI * 2;
+                const velocity = Math.random() * 200 + 100;
+                const tx = Math.cos(angle) * velocity;
+                const ty = Math.sin(angle) * velocity;
+
+                p.animate([
+                    { transform: 'translate(0,0) scale(1)', opacity: 1 },
+                    { transform: `translate(${tx}px, ${ty}px) scale(0)`, opacity: 0 }
+                ], {
+                    duration: 800 + Math.random() * 400,
+                    easing: 'cubic-bezier(0, .9, .57, 1)',
+                    fill: 'forwards'
+                }).onfinish = () => p.remove();
+            }
         }
     </script>
 </body>
