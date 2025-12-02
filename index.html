@@ -7,7 +7,7 @@
         content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#16213e">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>阿涔的专属坏情绪粉碎机 v4.0</title>
+    <title>阿涔的专属坏情绪粉碎机 v4.1</title>
     <link href="https://fonts.googleapis.com/css2?family=Zcool+KuaiLe&family=Noto+Sans+SC:wght@400;700&display=swap"
         rel="stylesheet">
     <style>
@@ -38,6 +38,7 @@
             display: flex;
             flex-direction: column;
             user-select: none;
+            transition: background 0.5s;
         }
 
         /* --- UI Components --- */
@@ -613,6 +614,13 @@
             unknown: { id: 'unknown', name: '无名烦恼', icon: '👾', keywords: [] }
         };
 
+        const THEMES = {
+            t_dark: { primary: '#ff9a9e', secondary: '#fad0c4', bg_dark: '#1a1a2e', bg_light: '#16213e' },
+            t_forest: { primary: '#4ade80', secondary: '#bbf7d0', bg_dark: '#14532d', bg_light: '#166534' },
+            t_candy: { primary: '#f472b6', secondary: '#fbcfe8', bg_dark: '#831843', bg_light: '#9d174d' },
+            t_star: { primary: '#818cf8', secondary: '#c7d2fe', bg_dark: '#1e1b4b', bg_light: '#312e81' }
+        };
+
         const SHOP_ITEMS = [
             { id: 'w_laser', name: '激光射线', type: 'weapon', price: 200, icon: '⚡️' },
             { id: 'w_bomb', name: '核能爆破', type: 'weapon', price: 500, icon: '💣' },
@@ -636,6 +644,7 @@
                 this.renderShop();
                 this.renderDex();
                 this.updateWelcome();
+                this.applyTheme(this.state.equippedTheme); // Apply theme on load
 
                 // Starter Bonus Check
                 if (!this.state.hasStarterBonus) {
@@ -684,6 +693,7 @@
                         this.saveState();
                         this.renderShop();
                         this.renderDex();
+                        this.applyTheme(this.state.equippedTheme);
                         this.showToast("✅ 读取成功!");
                     } catch (e) {
                         this.showToast("❌ 存档码无效");
@@ -751,14 +761,28 @@
                     osc.start(now);
                     osc.stop(now + 0.3);
                 } else if (type === 'smash') {
-                    // Enhanced Smash Sound
-                    osc.type = 'sawtooth';
-                    osc.frequency.setValueAtTime(150, now);
-                    osc.frequency.exponentialRampToValueAtTime(40, now + 0.5);
-                    gain.gain.setValueAtTime(0.8, now);
-                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
+                    // CUTE POP SOUND (Sine wave, high pitch, fast decay)
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(600, now);
+                    osc.frequency.exponentialRampToValueAtTime(100, now + 0.3);
+                    gain.gain.setValueAtTime(0.5, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
                     osc.start(now);
-                    osc.stop(now + 0.5);
+                    osc.stop(now + 0.3);
+
+                    // Add a second oscillator for "sparkle"
+                    const osc2 = this.audioCtx.createOscillator();
+                    const gain2 = this.audioCtx.createGain();
+                    osc2.connect(gain2);
+                    gain2.connect(this.audioCtx.destination);
+                    osc2.type = 'triangle';
+                    osc2.frequency.setValueAtTime(1200, now);
+                    osc2.frequency.linearRampToValueAtTime(2000, now + 0.1);
+                    gain2.gain.setValueAtTime(0.2, now);
+                    gain2.gain.linearRampToValueAtTime(0, now + 0.1);
+                    osc2.start(now);
+                    osc2.stop(now + 0.1);
+
                 } else if (type === 'levelup') {
                     osc.type = 'triangle';
                     osc.frequency.setValueAtTime(400, now);
@@ -807,7 +831,6 @@
                     this.renderDex();
                 }
 
-                // Increased Rewards
                 const xpGain = 50 + Math.floor(text.length * 2);
                 const coinGain = 50 + Math.floor(Math.random() * 50);
 
@@ -840,24 +863,18 @@
                 mText.innerText = text;
                 container.style.transform = 'translate(-50%, -50%) scale(1)';
 
-                // Tremble before explosion
                 setTimeout(() => {
                     container.style.animation = 'shake-hard 0.5s infinite';
                 }, 100);
 
                 setTimeout(() => {
-                    // Explosion
                     this.playSound('smash');
                     if (navigator.vibrate) navigator.vibrate([50, 50, 200]);
 
-                    // Screen Shake
                     document.body.style.animation = 'shake-hard 0.5s';
-
-                    // Flash
                     flash.style.opacity = '0.8';
                     setTimeout(() => flash.style.opacity = '0', 100);
 
-                    // Particles
                     this.createParticles(window.innerWidth / 2, window.innerHeight / 2);
 
                     container.style.animation = '';
@@ -874,7 +891,7 @@
 
             createParticles(x, y) {
                 const colors = ['#ff9a9e', '#fad0c4', '#a18cd1', '#ffffff', '#ffd700', '#ff6b6b'];
-                const particleCount = 150; // More particles!
+                const particleCount = 150;
 
                 for (let i = 0; i < particleCount; i++) {
                     const p = document.createElement('div');
@@ -887,7 +904,7 @@
                     p.style.background = colors[Math.floor(Math.random() * colors.length)];
                     p.style.left = `${x}px`;
                     p.style.top = `${y}px`;
-                    p.style.borderRadius = Math.random() > 0.5 ? '50%' : '0'; // Shapes
+                    p.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
 
                     const angle = Math.random() * Math.PI * 2;
                     const velocity = Math.random() * 300 + 100;
@@ -910,34 +927,58 @@
                 grid.innerHTML = '';
                 SHOP_ITEMS.forEach(item => {
                     const owned = this.state.inventory.includes(item.id);
+                    const isEquipped = this.state.equippedTheme === item.id || this.state.equippedWeapon === item.id;
+
                     const el = document.createElement('div');
                     el.className = `shop-item ${owned ? 'owned' : ''}`;
                     el.innerHTML = `
                         <div style="font-size: 30px;">${item.icon}</div>
                         <h4>${item.name}</h4>
-                        <p>${owned ? '已拥有' : '💰 ' + item.price}</p>
-                        <button class="buy-btn" ${owned || this.state.coins < item.price ? 'disabled' : ''}
-                            onclick="game.buyItem('${item.id}')">
-                            ${owned ? '装备' : '购买'}
+                        <p>${owned ? (isEquipped ? '✅ 已装备' : '已拥有') : '💰 ' + item.price}</p>
+                        <button class="buy-btn" ${!owned && this.state.coins < item.price ? 'disabled' : ''}
+                            onclick="game.handleShopItem('${item.id}')">
+                            ${owned ? (isEquipped ? '已装备' : '装备') : '购买'}
                         </button>
                     `;
                     grid.appendChild(el);
                 });
             }
 
-            buyItem(id) {
+            handleShopItem(id) {
                 const item = SHOP_ITEMS.find(i => i.id === id);
-                if (this.state.inventory.includes(id)) {
-                    this.showToast(`🎒 已装备: ${item.name}`);
-                    return;
+
+                // Buy if not owned
+                if (!this.state.inventory.includes(id)) {
+                    if (this.state.coins >= item.price) {
+                        this.state.coins -= item.price;
+                        this.state.inventory.push(id);
+                        this.saveState();
+                        this.showToast(`🛍️ 购买成功: ${item.name}`);
+                    }
                 }
 
-                if (this.state.coins >= item.price) {
-                    this.state.coins -= item.price;
-                    this.state.inventory.push(id);
+                // Equip if owned (or just bought)
+                if (this.state.inventory.includes(id)) {
+                    if (item.type === 'theme') {
+                        this.state.equippedTheme = id;
+                        this.applyTheme(id);
+                    } else {
+                        this.state.equippedWeapon = id;
+                    }
                     this.saveState();
-                    this.renderShop();
-                    this.showToast(`🛍️ 购买成功: ${item.name}`);
+                    this.renderShop(); // Re-render to show "Equipped" status
+                    this.showToast(`🎒 已装备: ${item.name}`);
+                }
+            }
+
+            applyTheme(themeId) {
+                const theme = THEMES[themeId];
+                if (theme) {
+                    const root = document.documentElement;
+                    root.style.setProperty('--primary', theme.primary);
+                    root.style.setProperty('--secondary', theme.secondary);
+                    root.style.setProperty('--bg-dark', theme.bg_dark);
+                    root.style.setProperty('--bg-light', theme.bg_light);
                 }
             }
 
