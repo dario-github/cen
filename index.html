@@ -1,10 +1,16 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>席涔的专属坏情绪粉碎机 2.0</title>
-    <link href="https://fonts.googleapis.com/css2?family=Zcool+KuaiLe&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#16213e">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>席涔的专属坏情绪粉碎机 2.1</title>
+    <link href="https://fonts.googleapis.com/css2?family=Zcool+KuaiLe&family=Noto+Sans+SC:wght@400;700&display=swap"
+        rel="stylesheet">
     <style>
         :root {
             --primary-color: #ff9a9e;
@@ -15,6 +21,12 @@
             --bg-light: #16213e;
             --text-color: #fff;
             --monster-color: #4a4e69;
+            --gold: #ffd700;
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
@@ -28,17 +40,11 @@
             align-items: center;
             justify-content: center;
             min-height: 100vh;
-            overflow: hidden; /* Prevent scroll during animations */
+            min-height: -webkit-fill-available;
+            overflow: hidden;
             touch-action: manipulation;
-        }
-
-        /* 粒子背景 */
-        #particles-js {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
-            pointer-events: none;
+            user-select: none;
+            -webkit-user-select: none;
         }
 
         .container {
@@ -49,18 +55,57 @@
             text-align: center;
             padding: 20px;
             perspective: 1000px;
+            /* Mobile layout adjustments */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        /* 顶部状态栏 (Gamification) */
+        .status-bar {
+            position: absolute;
+            top: max(20px, env(safe-area-inset-top));
+            left: 20px;
+            right: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.6);
+            pointer-events: none;
+            /* Let clicks pass through if needed */
+        }
+
+        .level-badge {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 5px 12px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            pointer-events: auto;
+        }
+
+        .level-badge span {
+            color: var(--gold);
+            font-weight: bold;
         }
 
         .header-area {
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             animation: float 6s ease-in-out infinite;
+            flex-shrink: 0;
         }
 
         .avatar-container {
             position: relative;
-            width: 120px;
-            height: 120px;
-            margin: 0 auto 15px;
+            width: 100px;
+            /* Slightly smaller for mobile */
+            height: 100px;
+            margin: 0 auto 10px;
         }
 
         .cartoon-avatar {
@@ -70,36 +115,39 @@
             object-fit: cover;
             border: 4px solid var(--primary-color);
             box-shadow: 0 0 20px rgba(255, 154, 158, 0.6);
-            background: #fff; /* Fallback */
+            background: #fff;
         }
 
         h1 {
             font-family: 'Zcool KuaiLe', cursive;
-            font-size: 28px;
+            font-size: 24px;
             margin: 0;
             background: linear-gradient(to right, #ff9a9e, #fecfef);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            text-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            text-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            line-height: 1.2;
         }
 
         .subtitle {
-            font-size: 14px;
-            color: rgba(255,255,255,0.7);
-            margin-top: 8px;
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-top: 5px;
             letter-spacing: 1px;
         }
 
-        /* 输入区域 */
         .input-wrapper {
             position: relative;
             background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             border-radius: 24px;
-            padding: 20px;
+            padding: 15px;
             border: 1px solid rgba(255, 255, 255, 0.1);
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
             transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            flex-shrink: 0;
+            margin-bottom: 20px;
         }
 
         textarea {
@@ -109,37 +157,41 @@
             border: none;
             color: #fff;
             font-size: 16px;
+            /* Prevents iOS zoom */
             resize: none;
             outline: none;
             font-family: inherit;
             line-height: 1.6;
+            padding-right: 40px;
+            /* Space for mic button */
         }
 
         textarea::placeholder {
             color: rgba(255, 255, 255, 0.3);
         }
 
-        /* 语音按钮 */
         .voice-btn {
             position: absolute;
-            bottom: 15px;
-            right: 15px;
+            bottom: 10px;
+            right: 10px;
             background: rgba(255, 255, 255, 0.1);
             border: none;
             border-radius: 50%;
-            width: 40px;
-            height: 40px;
+            width: 44px;
+            /* Larger touch target */
+            height: 44px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.3s;
+            transition: all 0.2s;
             color: var(--primary-color);
+            -webkit-tap-highlight-color: transparent;
         }
 
-        .voice-btn:hover {
+        .voice-btn:active {
             background: rgba(255, 255, 255, 0.2);
-            transform: scale(1.1);
+            transform: scale(0.95);
         }
 
         .voice-btn.listening {
@@ -148,7 +200,6 @@
             animation: pulse 1.5s infinite;
         }
 
-        /* 坏情绪实体化 - 小怪兽 */
         .mood-monster-container {
             position: absolute;
             top: 50%;
@@ -175,7 +226,7 @@
             justify-content: center;
             text-align: center;
             padding: 20px;
-            box-shadow: inset -10px -10px 20px rgba(0,0,0,0.5), 0 10px 30px rgba(0,0,0,0.5);
+            box-shadow: inset -10px -10px 20px rgba(0, 0, 0, 0.5), 0 10px 30px rgba(0, 0, 0, 0.5);
             animation: morph 4s ease-in-out infinite;
             overflow: hidden;
         }
@@ -221,20 +272,20 @@
         .monster-text {
             position: relative;
             z-index: 2;
-            font-size: 12px;
-            color: rgba(255,255,255,0.8);
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.9);
             word-break: break-all;
             max-height: 100%;
             overflow: hidden;
-            text-shadow: 0 1px 2px rgba(0,0,0,0.8);
-            opacity: 0.5;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+            opacity: 0.8;
+            font-weight: bold;
         }
 
-        /* 拳头动画 */
         .fist {
             position: absolute;
-            font-size: 100px;
-            top: -100px;
+            font-size: 120px;
+            top: -150px;
             left: 50%;
             transform: translateX(-50%);
             opacity: 0;
@@ -242,12 +293,11 @@
             pointer-events: none;
         }
 
-        /* 按钮 */
         .action-btn {
-            margin-top: 30px;
             background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
             border: none;
-            padding: 18px 60px;
+            padding: 16px 0;
+            width: 100%;
             color: #fff;
             font-size: 20px;
             font-weight: bold;
@@ -259,25 +309,26 @@
             overflow: hidden;
             font-family: 'Zcool KuaiLe', cursive;
             letter-spacing: 2px;
+            -webkit-tap-highlight-color: transparent;
         }
 
         .action-btn:active {
-            transform: scale(0.95);
+            transform: scale(0.96);
+            box-shadow: 0 5px 15px rgba(255, 154, 158, 0.3);
         }
 
-        /* 治愈卡片 */
         .healing-card {
             position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%) scale(0.8);
             width: 85%;
-            max-width: 360px;
+            max-width: 340px;
             background: rgba(255, 255, 255, 0.95);
             color: #333;
-            padding: 40px 30px;
+            padding: 30px 25px;
             border-radius: 30px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
             text-align: center;
             opacity: 0;
             pointer-events: none;
@@ -293,7 +344,7 @@
 
         .healing-emoji {
             font-size: 60px;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             display: block;
             animation: bounce 2s infinite;
         }
@@ -309,73 +360,177 @@
         .healing-sub {
             font-size: 14px;
             color: #666;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
         }
 
         .restart-btn {
             background: transparent;
             border: 2px solid var(--primary-color);
             color: var(--primary-color);
-            padding: 10px 30px;
-            border-radius: 20px;
+            padding: 12px 35px;
+            border-radius: 25px;
             font-weight: bold;
+            font-size: 16px;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.2s;
         }
 
-        .restart-btn:hover {
+        .restart-btn:active {
             background: var(--primary-color);
             color: #fff;
+            transform: scale(0.95);
         }
 
-        /* 动画定义 */
+        /* 声音开关 */
+        .sound-toggle {
+            position: absolute;
+            top: max(20px, env(safe-area-inset-top));
+            right: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: rgba(255, 255, 255, 0.6);
+            padding: 10px;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 100;
+            -webkit-tap-highlight-color: transparent;
+        }
+
         @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-8px);
+            }
         }
 
         @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(255, 154, 158, 0.7); }
-            70% { box-shadow: 0 0 0 15px rgba(255, 154, 158, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(255, 154, 158, 0); }
+            0% {
+                box-shadow: 0 0 0 0 rgba(255, 154, 158, 0.7);
+            }
+
+            70% {
+                box-shadow: 0 0 0 15px rgba(255, 154, 158, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(255, 154, 158, 0);
+            }
         }
 
         @keyframes morph {
-            0% { border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%; }
-            34% { border-radius: 70% 30% 50% 50% / 30% 30% 70% 70%; }
-            67% { border-radius: 100% 60% 60% 100% / 100% 100% 60% 60%; }
-            100% { border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%; }
+            0% {
+                border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
+            }
+
+            34% {
+                border-radius: 70% 30% 50% 50% / 30% 30% 70% 70%;
+            }
+
+            67% {
+                border-radius: 100% 60% 60% 100% / 100% 100% 60% 60%;
+            }
+
+            100% {
+                border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
+            }
         }
 
         @keyframes blink {
-            0%, 96%, 100% { height: 15px; }
-            98% { height: 2px; }
+
+            0%,
+            96%,
+            100% {
+                height: 15px;
+            }
+
+            98% {
+                height: 2px;
+            }
         }
 
         @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
         }
 
         @keyframes smash {
-            0% { transform: translateX(-50%) translateY(-200px) scale(1); opacity: 1; }
-            50% { transform: translateX(-50%) translateY(0) scale(1.5); opacity: 1; }
-            70% { transform: translateX(-50%) translateY(0) scale(1.5); opacity: 1; }
-            100% { transform: translateX(-50%) translateY(-50px) scale(1); opacity: 0; }
+            0% {
+                transform: translateX(-50%) translateY(-200px) scale(1);
+                opacity: 1;
+            }
+
+            50% {
+                transform: translateX(-50%) translateY(0) scale(1.5);
+                opacity: 1;
+            }
+
+            70% {
+                transform: translateX(-50%) translateY(0) scale(1.5);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateX(-50%) translateY(-50px) scale(1);
+                opacity: 0;
+            }
         }
 
         @keyframes shake-hard {
-            0% { transform: translate(1px, 1px) rotate(0deg); }
-            10% { transform: translate(-1px, -2px) rotate(-1deg); }
-            20% { transform: translate(-3px, 0px) rotate(1deg); }
-            30% { transform: translate(3px, 2px) rotate(0deg); }
-            40% { transform: translate(1px, -1px) rotate(1deg); }
-            50% { transform: translate(-1px, 2px) rotate(-1deg); }
-            60% { transform: translate(-3px, 1px) rotate(0deg); }
-            70% { transform: translate(3px, 1px) rotate(-1deg); }
-            80% { transform: translate(-1px, -1px) rotate(1deg); }
-            90% { transform: translate(1px, 2px) rotate(0deg); }
-            100% { transform: translate(1px, -2px) rotate(-1deg); }
+            0% {
+                transform: translate(1px, 1px) rotate(0deg);
+            }
+
+            10% {
+                transform: translate(-1px, -2px) rotate(-1deg);
+            }
+
+            20% {
+                transform: translate(-3px, 0px) rotate(1deg);
+            }
+
+            30% {
+                transform: translate(3px, 2px) rotate(0deg);
+            }
+
+            40% {
+                transform: translate(1px, -1px) rotate(1deg);
+            }
+
+            50% {
+                transform: translate(-1px, 2px) rotate(-1deg);
+            }
+
+            60% {
+                transform: translate(-3px, 1px) rotate(0deg);
+            }
+
+            70% {
+                transform: translate(3px, 1px) rotate(-1deg);
+            }
+
+            80% {
+                transform: translate(-1px, -1px) rotate(1deg);
+            }
+
+            90% {
+                transform: translate(1px, 2px) rotate(0deg);
+            }
+
+            100% {
+                transform: translate(1px, -2px) rotate(-1deg);
+            }
         }
 
         .particle {
@@ -383,10 +538,25 @@
             pointer-events: none;
             border-radius: 50%;
         }
-
     </style>
 </head>
+
 <body>
+
+    <div class="status-bar">
+        <div class="level-badge">
+            Lv.<span id="levelDisplay">1</span>
+        </div>
+        <div>已粉碎: <span id="crushCount">0</span></div>
+    </div>
+
+    <button class="sound-toggle" id="soundToggle" onclick="toggleSound()">
+        <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none"
+            stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+        </svg>
+    </button>
 
     <div class="container" id="mainContainer">
         <div class="header-area">
@@ -400,14 +570,19 @@
         <div class="input-wrapper" id="inputWrapper">
             <textarea id="moodInput" placeholder="在这里写下所有不开心..."></textarea>
             <button class="voice-btn" id="voiceBtn" title="语音输入">
-                <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
+                <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                    <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                    <line x1="12" y1="19" x2="12" y2="23"></line>
+                    <line x1="8" y1="23" x2="16" y2="23"></line>
+                </svg>
             </button>
         </div>
 
         <button class="action-btn" onclick="startDestruction()">💥 彻底粉碎 💥</button>
     </div>
 
-    <!-- 坏情绪小怪兽 -->
     <div class="mood-monster-container" id="monsterContainer">
         <div class="mood-monster">
             <div class="monster-face">
@@ -419,10 +594,8 @@
         </div>
     </div>
 
-    <!-- 拳头特效 -->
     <div class="fist" id="fist">👊</div>
 
-    <!-- 治愈卡片 -->
     <div class="healing-card" id="healingCard">
         <span class="healing-emoji" id="healingEmoji">✨</span>
         <div class="healing-text" id="healingMain"></div>
@@ -431,15 +604,106 @@
     </div>
 
     <script>
-        // --- 配置与数据 ---
-        const healingMessages = [
-            { emoji: "🚀", main: "Biu~ 烦恼已发射到外太空！", sub: "它现在是宇宙里的一粒尘埃了。" },
-            { emoji: "🌈", main: "雨过天晴，彩虹在等你！", sub: "所有的不开心都是为了迎接好运。" },
-            { emoji: "🍬", main: "坏心情粉碎成功！", sub: "奖励你一颗甜甜的糖果（云享用）。" },
-            { emoji: "🛡️", main: "席涔是最棒的！", sub: "区区小烦恼，根本破不了你的防。" },
-            { emoji: "🛁", main: "洗个热水澡，睡个好觉。", sub: "明天又是元气满满的一天！" },
-            { emoji: "🐱", main: "摸摸头，呼噜呼噜毛。", sub: "在我这里，你可以永远当个小朋友。" }
-        ];
+        // --- Game State ---
+        let state = {
+            crushedCount: parseInt(localStorage.getItem('crushedCount')) || 0,
+            soundEnabled: true
+        };
+
+        // --- Audio Context ---
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        let audioCtx;
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new AudioContext();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        }
+
+        function playSound(type) {
+            if (!state.soundEnabled) return;
+            initAudio();
+
+            const osc = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            osc.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+
+            const now = audioCtx.currentTime;
+
+            if (type === 'pop') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(800, now);
+                osc.frequency.exponentialRampToValueAtTime(1200, now + 0.1);
+                gainNode.gain.setValueAtTime(0.1, now);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+                osc.start(now);
+                osc.stop(now + 0.1);
+            } else if (type === 'smash') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(100, now);
+                osc.frequency.exponentialRampToValueAtTime(10, now + 0.3);
+                gainNode.gain.setValueAtTime(0.5, now);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+                osc.start(now);
+                osc.stop(now + 0.3);
+
+                const bufferSize = audioCtx.sampleRate * 0.5;
+                const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+                const data = buffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) {
+                    data[i] = Math.random() * 2 - 1;
+                }
+                const noise = audioCtx.createBufferSource();
+                noise.buffer = buffer;
+                const noiseGain = audioCtx.createGain();
+                noiseGain.gain.setValueAtTime(0.5, now);
+                noiseGain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+                noise.connect(noiseGain);
+                noiseGain.connect(audioCtx.destination);
+                noise.start(now);
+            } else if (type === 'heal') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(400, now);
+                osc.frequency.linearRampToValueAtTime(800, now + 0.5);
+                gainNode.gain.setValueAtTime(0, now);
+                gainNode.gain.linearRampToValueAtTime(0.2, now + 0.1);
+                gainNode.gain.linearRampToValueAtTime(0, now + 1.0);
+                osc.start(now);
+                osc.stop(now + 1.0);
+            }
+        }
+
+        function toggleSound() {
+            state.soundEnabled = !state.soundEnabled;
+            const btn = document.getElementById('soundToggle');
+            btn.style.opacity = state.soundEnabled ? '1' : '0.5';
+            if (state.soundEnabled) playSound('pop');
+        }
+
+        // --- Smart Analysis Data ---
+        const keywords = {
+            work: ['工作', '加班', '老板', '客户', 'PPT', '开会', '同事', '周报'],
+            love: ['男朋友', '女朋友', '吵架', '分手', '冷战', '喜欢', '表白'],
+            self: ['胖', '丑', '笨', '失败', '焦虑', '失眠', '痘痘', '脱发'],
+            money: ['穷', '没钱', '工资', '花呗', '账单', '房租', '吃土']
+        };
+
+        const smartMessages = {
+            work: { emoji: "💆‍♀️", main: "工作只是谋生，快乐才是人生。", sub: "下班后，你只属于你自己。" },
+            love: { emoji: "❤️", main: "爱自己是终身浪漫的开始。", sub: "你值得被温柔以待。" },
+            self: { emoji: "🌟", main: "你本来就很美/很棒！", sub: "不要用别人的标准衡量自己。" },
+            money: { emoji: "💰", main: "钱财乃身外之物（虽然很重要）。", sub: "健康和开心是买不到的无价之宝。" },
+            default: [
+                { emoji: "🚀", main: "Biu~ 烦恼已发射到外太空！", sub: "它现在是宇宙里的一粒尘埃了。" },
+                { emoji: "🌈", main: "雨过天晴，彩虹在等你！", sub: "所有的不开心都是为了迎接好运。" },
+                { emoji: "🍬", main: "坏心情粉碎成功！", sub: "奖励你一颗甜甜的糖果（云享用）。" },
+                { emoji: "🛡️", main: "席涔是最棒的！", sub: "区区小烦恼，根本破不了你的防。" }
+            ]
+        };
 
         const placeholders = [
             "谁惹你不开心了？写下来，我替你揍它！",
@@ -448,10 +712,15 @@
             "今天遇到了什么讨厌的事？"
         ];
 
-        // --- 初始化 ---
-        window.onload = function() {
+        // --- Init ---
+        window.onload = function () {
             updateWelcome();
+            updateStats();
             document.getElementById('moodInput').placeholder = placeholders[Math.floor(Math.random() * placeholders.length)];
+
+            // Unlock AudioContext on first interaction
+            document.body.addEventListener('click', initAudio, { once: true });
+            document.body.addEventListener('touchstart', initAudio, { once: true });
         };
 
         function updateWelcome() {
@@ -463,7 +732,13 @@
             document.getElementById('welcomeText').innerText = msg;
         }
 
-        // --- 语音输入 ---
+        function updateStats() {
+            document.getElementById('crushCount').innerText = state.crushedCount;
+            const level = Math.floor(state.crushedCount / 10) + 1;
+            document.getElementById('levelDisplay').innerText = level;
+        }
+
+        // --- Voice ---
         const voiceBtn = document.getElementById('voiceBtn');
         const moodInput = document.getElementById('moodInput');
         let recognition;
@@ -474,28 +749,24 @@
             recognition.interimResults = false;
             recognition.lang = 'zh-CN';
 
-            recognition.onstart = () => {
-                voiceBtn.classList.add('listening');
-            };
-
-            recognition.onend = () => {
-                voiceBtn.classList.remove('listening');
-            };
-
+            recognition.onstart = () => voiceBtn.classList.add('listening');
+            recognition.onend = () => voiceBtn.classList.remove('listening');
             recognition.onresult = (event) => {
                 const transcript = event.results[0][0].transcript;
                 moodInput.value += transcript;
+                playSound('pop');
             };
-
             voiceBtn.onclick = () => {
+                initAudio();
                 recognition.start();
             };
         } else {
-            voiceBtn.style.display = 'none'; // 不支持则隐藏
+            voiceBtn.style.display = 'none';
         }
 
-        // --- 核心逻辑 ---
+        // --- Core Logic ---
         function startDestruction() {
+            initAudio();
             const text = moodInput.value.trim();
             if (!text) {
                 shakeElement(document.getElementById('inputWrapper'));
@@ -503,60 +774,65 @@
                 return;
             }
 
-            // 1. 召唤小怪兽 (将文字实体化)
+            // Gamification Update
+            state.crushedCount++;
+            localStorage.setItem('crushedCount', state.crushedCount);
+            updateStats();
+
+            // Animation Start
             const monsterContainer = document.getElementById('monsterContainer');
             const monsterText = document.getElementById('monsterText');
             const mainContainer = document.getElementById('mainContainer');
 
             monsterText.innerText = text;
 
-            // 隐藏输入框，显示怪兽
             mainContainer.style.transition = 'all 0.5s';
             mainContainer.style.transform = 'scale(0.8) translateY(50px)';
             mainContainer.style.opacity = '0.3';
             mainContainer.style.filter = 'blur(4px)';
 
             monsterContainer.style.transform = 'translate(-50%, -50%) scale(1)';
+            playSound('pop');
 
-            // 2. 延迟后开始粉碎动画
-            setTimeout(() => {
-                performAttack();
-            }, 800);
+            setTimeout(() => performAttack(text), 800);
         }
 
-        function performAttack() {
+        function performAttack(text) {
             const fist = document.getElementById('fist');
-            const monster = document.querySelector('.mood-monster');
 
-            // 拳头落下
             fist.style.animation = 'smash 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards';
 
-            // 击中时刻
             setTimeout(() => {
-                // 震动
                 if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
                 document.body.style.animation = 'shake-hard 0.5s';
-
-                // 粒子爆炸
+                playSound('smash');
                 createExplosion(window.innerWidth / 2, window.innerHeight / 2);
-
-                // 怪兽消失
                 document.getElementById('monsterContainer').style.transform = 'translate(-50%, -50%) scale(0)';
+                setTimeout(() => showHealing(text), 800);
+            }, 300);
 
-                // 显示治愈卡片
-                setTimeout(showHealing, 800);
-
-            }, 300); // 对应 smash 动画的击中时间点
-
-            // 清理动画样式以便重置
             setTimeout(() => {
                 fist.style.animation = '';
                 document.body.style.animation = '';
             }, 1000);
         }
 
-        function showHealing() {
-            const msg = healingMessages[Math.floor(Math.random() * healingMessages.length)];
+        function showHealing(text) {
+            playSound('heal');
+
+            // Smart Analysis
+            let msg = null;
+            for (const [key, words] of Object.entries(keywords)) {
+                if (words.some(w => text.includes(w))) {
+                    msg = smartMessages[key];
+                    break;
+                }
+            }
+            if (!msg) {
+                const defaults = smartMessages.default;
+                msg = defaults[Math.floor(Math.random() * defaults.length)];
+            }
+
             document.getElementById('healingEmoji').innerText = msg.emoji;
             document.getElementById('healingMain').innerText = msg.main;
             document.getElementById('healingSub').innerText = msg.sub;
@@ -571,6 +847,7 @@
             const input = document.getElementById('moodInput');
 
             healingCard.classList.remove('show');
+            playSound('pop');
 
             setTimeout(() => {
                 mainContainer.style.transform = 'none';
@@ -582,15 +859,14 @@
             }, 300);
         }
 
-        // --- 工具函数 ---
         function shakeElement(el) {
             el.style.animation = 'shake-hard 0.4s';
             setTimeout(() => el.style.animation = '', 400);
         }
 
         function createExplosion(x, y) {
-            const colors = ['#ff9a9e', '#fad0c4', '#a18cd1', '#ffffff'];
-            const particleCount = 60;
+            const colors = ['#ff9a9e', '#fad0c4', '#a18cd1', '#ffffff', '#ffd700'];
+            const particleCount = 80;
 
             for (let i = 0; i < particleCount; i++) {
                 const p = document.createElement('div');
@@ -621,4 +897,5 @@
         }
     </script>
 </body>
+
 </html>
