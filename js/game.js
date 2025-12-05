@@ -379,14 +379,18 @@
                 if (!item) return;
 
                 if (item.type === 'avatar') {
-                    // Preview Avatar: Temporarily apply filter
-                    const originalFilter = document.getElementById('playerAvatar').style.filter;
+                    // Preview Avatar: Temporarily apply filter and image
+                    const imgEl = document.getElementById('playerAvatar');
+                    const originalFilter = imgEl.style.filter;
+                    const originalSrc = imgEl.src;
+
                     this.applyAvatar(id); // Apply new look
                     this.showToast(`👀 试穿中: ${item.name}`);
 
                     // Revert after 3 seconds
                     setTimeout(() => {
                         if (this.state.equippedAvatar !== id) { // Only revert if not equipped during preview
+                            // Revert to what is currently equipped (which might be the original or a new purchase)
                             this.applyAvatar(this.state.equippedAvatar);
                         }
                     }, 3000);
@@ -461,8 +465,16 @@
 
             applyAvatar(avatarId) {
                 const item = SHOP_ITEMS.find(i => i.id === avatarId);
-                if (item && item.filter) {
-                    document.getElementById('playerAvatar').style.filter = item.filter;
+                if (item) {
+                    const imgEl = document.getElementById('playerAvatar');
+                    if (item.image) {
+                        imgEl.src = item.image;
+                    }
+                    if (item.filter) {
+                        imgEl.style.filter = item.filter;
+                    } else {
+                        imgEl.style.filter = 'none';
+                    }
                 }
             }
 
