@@ -29,7 +29,7 @@
                 const defaultState = {
                     xp: 0,
                     level: 1,
-                    coins: 0,
+                    coins: 5000,
                     unlockedMonsters: [],
                     inventory: ['w_fist', 't_dark', 'a_casual'],
                     equippedWeapon: 'w_fist',
@@ -375,23 +375,35 @@
             }
 
             previewShopItem(id) {
+                console.log(`[Shop] Preview requested for: ${id}`);
                 const item = SHOP_ITEMS.find(i => i.id === id);
-                if (!item) return;
+                if (!item) {
+                    console.error(`[Shop] Item not found: ${id}`);
+                    return;
+                }
 
                 if (item.type === 'avatar') {
                     // Preview Avatar: Temporarily apply filter and image
                     const imgEl = document.getElementById('playerAvatar');
+                    if (!imgEl) {
+                        console.error('[Shop] #playerAvatar element not found!');
+                        return;
+                    }
                     const originalFilter = imgEl.style.filter;
                     const originalSrc = imgEl.src;
+                    console.log(`[Shop] Previewing Avatar. Original Src: ${originalSrc}, Original Filter: ${originalFilter}`);
 
                     this.applyAvatar(id); // Apply new look
                     this.showToast(`👀 试穿中: ${item.name}`);
 
                     // Revert after 3 seconds
                     setTimeout(() => {
+                        console.log(`[Shop] Reverting preview for: ${id}`);
                         if (this.state.equippedAvatar !== id) { // Only revert if not equipped during preview
                             // Revert to what is currently equipped (which might be the original or a new purchase)
                             this.applyAvatar(this.state.equippedAvatar);
+                        } else {
+                            console.log(`[Shop] Item ${id} was equipped during preview, not reverting.`);
                         }
                     }, 3000);
                 } else if (item.type === 'theme') {
@@ -411,16 +423,17 @@
             }
 
             handleShopItem(id) {
-                console.log("Handling shop item:", id);
+                console.log(`[Shop] Handle item click: ${id}`);
                 const item = SHOP_ITEMS.find(i => i.id === id);
                 if (!item) {
-                    console.error("Item not found:", id);
+                    console.error(`[Shop] Item not found: ${id}`);
                     return;
                 }
 
                 // Purchase Logic
                 if (!this.state.inventory.includes(id)) {
                     if (this.state.coins >= item.price) {
+                        console.log(`[Shop] Purchasing item: ${item.name}`);
                         this.state.coins -= item.price;
                         this.state.inventory.push(id);
                         this.saveState();
@@ -428,11 +441,13 @@
                         // Auto-equip after purchase
                         this.equipItem(item);
                     } else {
+                        console.warn(`[Shop] Not enough coins. Needed: ${item.price}, Have: ${this.state.coins}`);
                         this.showToast(`💸 金币不足，还差 ${item.price - this.state.coins} 金币`);
                         return;
                     }
                 } else {
                     // Already owned, just equip
+                    console.log(`[Shop] Item already owned, equipping: ${item.name}`);
                     this.equipItem(item);
                 }
 
@@ -440,6 +455,7 @@
             }
 
             equipItem(item) {
+                console.log(`[Shop] Equipping item: ${item.id} (${item.type})`);
                 if (item.type === 'theme') {
                     this.state.equippedTheme = item.id;
                     this.applyTheme(item.id);
@@ -464,17 +480,37 @@
             }
 
             applyAvatar(avatarId) {
+                console.log(`[Game] applyAvatar called with: ${avatarId}`);
                 const item = SHOP_ITEMS.find(i => i.id === avatarId);
                 if (item) {
                     const imgEl = document.getElementById('playerAvatar');
-                    if (item.image) {
-                        imgEl.src = item.image;
+                    if (!imgEl) {
+                        console.error('[Game] #playerAvatar element not found in applyAvatar');
+                        return;
                     }
+
+                    if (item.image) {
+                        // Add timestamp to force reload image and prevent caching issues
+                        const newSrc = `${item.image}?t=${Date.now()}`;
+                        console.log(`[Game] Setting avatar src to: ${newSrc}`);
+                        imgEl.src = newSrc;
+
+                        // Verify after setting
+                        setTimeout(() => {
+                            console.log(`[Game] Avatar src is now: ${imgEl.src}`);
+                        }, 50);
+                    } else {
+                        console.warn(`[Game] No image defined for avatar: ${avatarId}`);
+                    }
+
                     if (item.filter) {
+                        console.log(`[Game] Setting avatar filter to: ${item.filter}`);
                         imgEl.style.filter = item.filter;
                     } else {
                         imgEl.style.filter = 'none';
                     }
+                } else {
+                    console.error(`[Game] Avatar item not found in data: ${avatarId}`);
                 }
             }
 
